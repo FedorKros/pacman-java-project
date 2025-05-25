@@ -19,30 +19,11 @@ public class PacmanGUI extends JFrame  {
 
 
     public PacmanGUI() {
-//        super("Pacman");
-//        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-//        setPreferredSize(Constants.WINDOW_SIZE);
-//
-//        setLocationRelativeTo(null);
-//        setResizable(false);
-//        setLayout(null);
-//
-//        // Start from the main menu
-//        stateStack = new Stack<BaseState>();
-//        stateStack.push(new MainMenuState(this));
-//
-//        BaseState state = stateStack.peek();
-//        add(state);
-//        state.setBounds(0, 0, Constants.WINDOW_SIZE.width, Constants.WINDOW_SIZE.height);
-//        setSize(WINDOW_SIZE);
-//        setVisible(true);
-//        gameLoop();
 
         super("Pacman");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setPreferredSize(Constants.WINDOW_SIZE);
 
-        setLocationRelativeTo(null);
         setResizable(false);
         setLayout(new BorderLayout());
 
@@ -51,17 +32,15 @@ public class PacmanGUI extends JFrame  {
         stateStack.push(new MainMenuState(this));
         add(stateStack.peek(), BorderLayout.CENTER);
         pack();
+        setLocationRelativeTo(null);
         setVisible(true);
         gameLoop();
-
     }
 
     public void gameLoop() {
         Timer gameLoop = new Timer(FRAME_LENGTH, e -> {
             if (!stateStack.isEmpty()) {
                 BaseState curState = stateStack.peek();
-                curState.processInput();
-                curState.update();
                 curState.repaint();
             }
         });
@@ -82,6 +61,7 @@ public class PacmanGUI extends JFrame  {
         add(newState);
         revalidate();
         repaint();
+        newState.requestFocus();
     }
 
     public void removeState() {

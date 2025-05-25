@@ -4,6 +4,8 @@ import Common.Tools;
 import GameLogic.PacmanGUI;
 
 import javax.swing.*;
+import java.awt.*;
+import java.awt.event.KeyEvent;
 
 public class ScoresState extends BaseState {
     JLabel label;
@@ -17,13 +19,15 @@ public class ScoresState extends BaseState {
 
     }
 
+//    @Override
+//    public void processInput() {}
+//    @Override
+//    public void update() {}
+
     @Override
-    public void processInput() {
-
-    }
-
-    @Override
-    public void update() {
-
+    public void keyPressed(KeyEvent e) {
+        if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+            gui.changeState(new MainMenuState(gui));
+        }
     }
 }

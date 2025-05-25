@@ -4,8 +4,12 @@ import GameLogic.PacmanGUI;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyListener;
+import java.awt.event.KeyEvent;
 
-public abstract class BaseState extends JPanel {
+public abstract class BaseState extends JPanel implements ActionListener, KeyListener {
     PacmanGUI gui;
 
 
@@ -14,11 +18,27 @@ public abstract class BaseState extends JPanel {
         setLayout(null);
         setVisible(true);
         setPreferredSize(Constants.WINDOW_SIZE);
-
+        setFocusable(true);
+        addKeyListener(this);
     }
 
-    public abstract void processInput();
-    public abstract void update();
+//    public abstract void processInput();
+//    public abstract void update();
 
+    @Override
+    public void actionPerformed(ActionEvent e) {}
+
+    @Override
+    public void keyPressed(KeyEvent e) {
+        if (e.getKeyCode() == KeyEvent.VK_LEFT) {
+            System.out.println("Left arrow pressed");
+        }
+    }
+
+    @Override
+    public void keyReleased(KeyEvent e) {}
+
+    @Override
+    public void keyTyped(KeyEvent e) {}
 
 }
