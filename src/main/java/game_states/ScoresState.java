@@ -1,10 +1,8 @@
-package GameStates;
+package game_states;
 
-import Common.Tools;
-import GameLogic.PacmanGUI;
+import game_logic.PacmanGUI;
 
 import javax.swing.*;
-import java.awt.*;
 import java.awt.event.KeyEvent;
 
 public class ScoresState extends BaseState {

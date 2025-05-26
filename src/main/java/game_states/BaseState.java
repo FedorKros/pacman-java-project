@@ -1,6 +1,6 @@
-package GameStates;
-import Common.Constants;
-import GameLogic.PacmanGUI;
+package game_states;
+import common.Constants;
+import game_logic.PacmanGUI;
 
 import javax.swing.*;
 import java.awt.*;
@@ -20,6 +20,7 @@ public abstract class BaseState extends JPanel implements ActionListener, KeyLis
         setPreferredSize(Constants.WINDOW_SIZE);
         setFocusable(true);
         addKeyListener(this);
+        setBackground(Color.BLACK);
     }
 
 //    public abstract void processInput();
@@ -29,11 +30,7 @@ public abstract class BaseState extends JPanel implements ActionListener, KeyLis
     public void actionPerformed(ActionEvent e) {}
 
     @Override
-    public void keyPressed(KeyEvent e) {
-        if (e.getKeyCode() == KeyEvent.VK_LEFT) {
-            System.out.println("Left arrow pressed");
-        }
-    }
+    public void keyPressed(KeyEvent e) {}
 
     @Override
     public void keyReleased(KeyEvent e) {}

@@ -1,16 +1,15 @@
-package GameLogic;
+package game_logic;
 
-import Common.Constants;
-import GameStates.BaseState;
-import GameStates.MainMenuState;
+import common.Constants;
+import game_states.BaseState;
+import game_states.MainMenuState;
 
 
 import javax.swing.*;
 import java.awt.*;
 import java.util.Stack;
 
-import static Common.Constants.FRAME_LENGTH;
-import static Common.Constants.WINDOW_SIZE;
+import static common.Constants.FRAME_LENGTH;
 
 public class PacmanGUI extends JFrame  {
     private Stack<BaseState> stateStack;
@@ -34,17 +33,25 @@ public class PacmanGUI extends JFrame  {
         pack();
         setLocationRelativeTo(null);
         setVisible(true);
-        gameLoop();
+        gameThread();
     }
 
-    public void gameLoop() {
-        Timer gameLoop = new Timer(FRAME_LENGTH, e -> {
-            if (!stateStack.isEmpty()) {
-                BaseState curState = stateStack.peek();
-                curState.repaint();
+
+    public void gameThread() {
+        new Thread(() -> {
+            while (true) {
+                try {
+                    Thread.sleep(FRAME_LENGTH);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+
+                if (!stateStack.isEmpty()) {
+                    BaseState curState = stateStack.peek();
+                    curState.repaint();
+                }
             }
-        });
-        gameLoop.start();
+        }).start();
     }
 
 

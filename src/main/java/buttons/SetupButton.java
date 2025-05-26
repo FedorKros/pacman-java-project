@@ -1,16 +1,20 @@
-package Common;
+package buttons;
+
+import common.Constants;
 
 import javax.swing.*;
+import javax.swing.border.LineBorder;
+import java.awt.*;
 import java.awt.event.ActionListener;
 
-public class Tools {
-
+public class SetupButton {
     public static JButton setupButton(String text, JPanel panel, int x, int y) {
         JButton button = new JButton(text);
         button.setBounds(x, y, Constants.BUTTON_WIDTH, Constants.BUTTON_HEIGHT);
         panel.add(button);
         button.addActionListener((ActionListener) panel);
         button.setFocusPainted(false);
+
         return button;
     }
 
@@ -21,6 +25,12 @@ public class Tools {
         panel.add(button);
         button.addActionListener((ActionListener) panel);
         button.setFocusPainted(false);
+        button.setContentAreaFilled(false);
+        button.setBorderPainted(true);
+        button.setForeground(Color.ORANGE);
+        button.setFont(Constants.FONT_NORMAL);
+        button.setBorder(new LineBorder(Color.CYAN));
+
         return button;
     }
 }

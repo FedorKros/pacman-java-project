@@ -1,24 +1,27 @@
-package Characters;
+package characters;
 
-import Common.Constants;
+import common.Constants;
 
 import java.awt.*;
 
 public class Player  {
     private int x, y;
+    int[][] gameMap;
     // u d l r are directions
     private char direction;
 
-    public Player(int x, int y) {
+    public Player(int x, int y, int[][] gameMap) {
         this.x = x;
         this.y = y;
+        this.gameMap = gameMap;
     }
 
     public void moveBy(int horizontalSpeed, int verticalSpeed) {
-        int nextX = x+horizontalSpeed;
-        int nextY = y+verticalSpeed;
-        if (Constants.SMALL_MAP[nextY][nextX] != 1) {
+        int nextX = this.x+horizontalSpeed;
+        int nextY = this.y+verticalSpeed;
+        if (gameMap[nextY][nextX] != 1) {
             setPos(nextX, nextY);
+            System.out.println("Moved to " + nextX + "," + nextY);
         }
     }
 
