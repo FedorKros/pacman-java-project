@@ -10,13 +10,14 @@ public class ScoresState extends BaseState {
 
     public ScoresState(PacmanGUI gui) {
         super(gui);
+    }
 
+    @Override
+    public void setupUI() {
         label = new JLabel("Scores");
         add(label);
         label.setBounds(300,300, 300,50);
-
     }
-
 //    @Override
 //    public void processInput() {}
 //    @Override

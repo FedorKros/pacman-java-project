@@ -18,6 +18,7 @@ public class Constants {
 //    public static final Font FONT = new Font("assets/fonts/Jersey-Regular.ttf", Font.PLAIN, 18);
     public static final Font FONT_NORMAL, FONT_LARGE;
 
+
     static {
         try {
             FONT_NORMAL = Font.createFont(Font.TRUETYPE_FONT, new File("assets/fonts/Jersey-Regular.ttf")).deriveFont(Font.PLAIN, 26);
@@ -37,6 +38,10 @@ public class Constants {
     // Button size configuration
     public static final int BUTTON_WIDTH = 200;
     public static final int BUTTON_HEIGHT = 50;
+
+    // Map button conf
+    public static final Dimension MAP_BUTTON_SIZE = new Dimension(BUTTON_WIDTH, BUTTON_HEIGHT*4);
+    public static final int MAP_BUTTON_HMARGIN = (WINDOW_SIZE.width - MAP_BUTTON_SIZE.width*3)/4;
 
     // Game "tiles" configuration
     public static final int[][] SMALL_MAP = {
@@ -62,6 +67,14 @@ public class Constants {
     public static final int SMALL_TILE_SIZE = (WINDOW_SIZE.height-TITLEBAR_HEIGHT)/SMALL_MAP.length;
     public static final Dimension MAP_SIZE = new Dimension(WINDOW_SIZE.height, WINDOW_SIZE.height);
 
+
+//    public static final Color TITLE_COLOR = new Color(0, 255, 144);
+    public static final Color TITLE_COLOR = Color.ORANGE;
+//    public static final Color BUTTON_TEXT_COLOR = new Color(255, 26, 229);
+    public static final Color BUTTON_TEXT_COLOR = Color.ORANGE;
+
+    public static final Dimension MENU_BUTTON_VMARGIN = new Dimension(0,30);
+    public static final Dimension MENU_TITLE_VMARGIN = new Dimension(0,100);
 
     }
 

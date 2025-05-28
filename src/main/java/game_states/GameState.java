@@ -13,6 +13,10 @@ public class GameState extends BaseState {
 
     public GameState(PacmanGUI gui) {
         super(gui);
+    }
+
+    @Override
+    public void setupUI() {
         setLayout(null);
         map = Constants.SMALL_MAP;
         player = new Player(1,1, this.map);
@@ -21,14 +25,7 @@ public class GameState extends BaseState {
         mapPanel.setBounds(Constants.GAP_WIDTH, 0, Constants.WINDOW_SIZE.height, Constants.WINDOW_SIZE.height);
         add(mapPanel);
         mapPanel.requestFocusInWindow();
-
-
-
-
-
     }
-
-
 
     @Override
     public void keyPressed(KeyEvent e) {

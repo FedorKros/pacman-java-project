@@ -15,19 +15,21 @@ public class MouseHover extends MouseAdapter {
         JButton button = (JButton) e.getSource();
 //        button.setBorderPainted(false);
         button.setBorder(new LineBorder(Color.CYAN, 4));
-//        button.setOpaque(true);
-//        button.setContentAreaFilled(true);
-//        button.setFont(Constants.FONT_HOVER);
 //        new Thread(() -> {
-//            int opacity = 0;
-//            button.setBackground(new Color(1,255,255, opacity));
-//            while (opacity < 255) {
-//                opacity++;
-//                button.setBackground(new Color(1,255,255, opacity));
+//            for (int alpha = 0; alpha <= 255; alpha += 15) {
+//                final int a = alpha;
+//
+//                SwingUtilities.invokeLater(() -> {
+//                    Color glow = new Color(0, 255, 204, a); // Neon cyan with fading in alpha
+//                    button.setBorder(new LineBorder(glow, 6));
+//                    button.repaint();
+//                });
+//
 //                try {
-//                    Thread.sleep(1);
+//                    Thread.sleep(30); // Adjust for speed
 //                } catch (InterruptedException ex) {
-//                    throw new RuntimeException(ex);
+//                    Thread.currentThread().interrupt();
+//                    break;
 //                }
 //            }
 //        }).start();

@@ -2,6 +2,7 @@ package game_states;
 import common.Constants;
 import game_logic.PacmanGUI;
 
+import javax.net.ssl.SSLContextSpi;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -11,7 +12,7 @@ import java.awt.event.KeyEvent;
 
 public abstract class BaseState extends JPanel implements ActionListener, KeyListener {
     PacmanGUI gui;
-
+    JLabel titleLabel;
 
     public BaseState(PacmanGUI gui) {
         this.gui = gui;
@@ -21,7 +22,16 @@ public abstract class BaseState extends JPanel implements ActionListener, KeyLis
         setFocusable(true);
         addKeyListener(this);
         setBackground(Color.BLACK);
+
+        titleLabel = new JLabel();
+        titleLabel.setForeground(Constants.TITLE_COLOR);
+        titleLabel.setFont(Constants.FONT_LARGE);
+
+
+        setupUI();
     }
+
+    abstract public void setupUI();
 
 //    public abstract void processInput();
 //    public abstract void update();

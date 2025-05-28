@@ -11,44 +11,48 @@ import java.awt.event.*;
 
 public class MainMenuState extends BaseState {
     JButton playButton, scoresButton, quitButton;
-    JLabel titleLabel;
+
 
     public MainMenuState(PacmanGUI gui) {
         super(gui);
+    }
 
-        titleLabel = new JLabel("Pacman");
-        titleLabel.setFont(Constants.FONT_LARGE);
-        titleLabel.setForeground(Color.WHITE);
-        titleLabel.setBounds(
-                (Constants.WINDOW_SIZE.width - Constants.TITLE_LABEL_SIZE.width)/2,
-                100,
-                Constants.TITLE_LABEL_SIZE.width,
-                Constants.TITLE_LABEL_SIZE.height);
-        add(titleLabel);
+    @Override
+    public void setupUI() {
 
+        setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
+        titleLabel.setText("CyberpunkMan");
 
-        playButton = SetupButton.setupButtonCenter("New Game", this, 250);
-        scoresButton = SetupButton.setupButtonCenter("Highest Scores", this, 350);
-        quitButton = SetupButton.setupButtonCenter("Exit", this, 450);
+        playButton = SetupButton.setupButton("New Game", this);
+        scoresButton = SetupButton.setupButton("Highest Scores", this);
+        quitButton = SetupButton.setupButton("Exit", this);
 
 //        https://stackoverflow.com/questions/22638926/how-to-put-hover-effect-on-jbutton
 //        https://docs.oracle.com/javase/8/docs/api/java/awt/event/MouseAdapter.html
-
         playButton.addMouseListener(new MouseHover());
         scoresButton.addMouseListener(new MouseHover());
         quitButton.addMouseListener(new MouseHover());
 
+        add(Box.createVerticalGlue());
+        add(titleLabel); add(Box.createRigidArea(Constants.MENU_TITLE_VMARGIN));
+        add(playButton); add(Box.createRigidArea(Constants.MENU_BUTTON_VMARGIN));
+        add(scoresButton); add(Box.createRigidArea(Constants.MENU_BUTTON_VMARGIN));
+        add(quitButton); add(Box.createVerticalGlue());
 
-
+        for (Component c: getComponents()) {
+            if (c instanceof JComponent) {
+                ((JComponent) c).setAlignmentX(Component.CENTER_ALIGNMENT);
+            }
+        }
     }
-
 
 
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == playButton) {
-            gui.changeState(new GameState(gui));
+//            gui.changeState(new GameState(gui));
+            gui.changeState(new SelectMapState(gui));
         } else if (e.getSource() == scoresButton) {
             gui.changeState(new ScoresState(gui));
         } else if (e.getSource() == quitButton) {
