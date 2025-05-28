@@ -1,31 +1,33 @@
 package game_states;
 import characters.Player;
 import common.Constants;
-import game_logic.MapPanel;
 import game_logic.PacmanGUI;
 
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.KeyEvent;
 
 public class GameState extends BaseState {
-    MapPanel mapPanel;
-    int[][] map;
+    int[][] gameMap;
     Player player;
 
-    public GameState(PacmanGUI gui) {
+    public GameState(PacmanGUI gui, int mapNumber) {
         super(gui);
+
+        switch (mapNumber) {
+            case 1 -> gameMap = Constants.SMALL_MAP;
+            case 2 -> gameMap = Constants.MEDIUM_MAP;
+            case 3 -> gameMap = Constants.BIG_MAP;
+
+        }
+        player = new Player(1,1, gameMap);
+        updateMap();
     }
 
     @Override
     public void setupUI() {
-        setLayout(null);
-        map = Constants.SMALL_MAP;
-        player = new Player(1,1, this.map);
-
-        mapPanel = new MapPanel(Constants.SMALL_MAP, player);
-        mapPanel.setBounds(Constants.GAP_WIDTH, 0, Constants.WINDOW_SIZE.height, Constants.WINDOW_SIZE.height);
-        add(mapPanel);
-        mapPanel.requestFocusInWindow();
     }
+
 
     @Override
     public void keyPressed(KeyEvent e) {
@@ -42,6 +44,36 @@ public class GameState extends BaseState {
         else if (e.getKeyCode() == KeyEvent.VK_DOWN) {
             player.moveBy(0,1);
         }
+        updateMap();
+
+    }
+
+    public void updateMap() {
+        removeAll();
+        setLayout(new GridBagLayout());
+        GridBagConstraints c = new GridBagConstraints();
+        setBackground(Color.BLACK);
+        for (int i = 0; i < gameMap.length; i++) {
+            for (int j = 0; j < gameMap[i].length; j++) {
+
+                JPanel tile = new JPanel();
+                tile.setPreferredSize(Constants.SMALL_TILE_DIMENSION);
+                if (gameMap[i][j] == 1) {
+                    tile.setBackground(Constants.WALL_COLOR);
+                }
+                else tile.setBackground(Color.BLACK);
+                if (player.getX() == j && player.getY() == i) {
+                    tile.setBackground(Color.ORANGE);
+                }
+
+                c.gridx = j;
+                c.gridy = i;
+
+                add(tile, c);
+            }
+        }
+
+        revalidate();
         repaint();
 
     }

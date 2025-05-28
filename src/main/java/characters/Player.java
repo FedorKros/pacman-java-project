@@ -4,43 +4,21 @@ import common.Constants;
 
 import java.awt.*;
 
-public class Player  {
-    private int x, y;
-    int[][] gameMap;
-    // u d l r are directions
-    private char direction;
+public class Player extends Character {
+
 
     public Player(int x, int y, int[][] gameMap) {
-        this.x = x;
-        this.y = y;
-        this.gameMap = gameMap;
+        super(x, y, gameMap);
     }
 
-    public void moveBy(int horizontalSpeed, int verticalSpeed) {
-        int nextX = this.x+horizontalSpeed;
-        int nextY = this.y+verticalSpeed;
-        if (gameMap[nextY][nextX] != 1) {
-            setPos(nextX, nextY);
-            System.out.println("Moved to " + nextX + "," + nextY);
-        }
-    }
-
+    @Override
     public void draw(Graphics g) {
         g.setColor(Color.GREEN);
-        g.fillRect(x* Constants.SMALL_TILE_SIZE, y* Constants.SMALL_TILE_SIZE, Constants.SMALL_TILE_SIZE, Constants.SMALL_TILE_SIZE);
+        g.fillRect(x* Constants.TILE_SIZE, y* Constants.TILE_SIZE, Constants.TILE_SIZE, Constants.TILE_SIZE);
     }
 
-    public void setPos(int x, int y) {
-        this.x = x;
-        this.y = y;
-    }
 
-    public int getX() {
-        return x;
-    }
 
-    public int getY() {
-        return y;
-    }
+
 
 }

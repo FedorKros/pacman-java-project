@@ -33,9 +33,6 @@ public abstract class BaseState extends JPanel implements ActionListener, KeyLis
 
     abstract public void setupUI();
 
-//    public abstract void processInput();
-//    public abstract void update();
-
     @Override
     public void actionPerformed(ActionEvent e) {}
 
