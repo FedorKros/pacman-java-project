@@ -8,6 +8,7 @@ import map_navigation.GraphMap;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
+import java.util.ArrayList;
 import java.util.List;
 
 import static common.Constants.FRAME_LENGTH;
@@ -17,7 +18,8 @@ public class GameState extends BaseState {
     Player player;
     Enemy enemy1, enemy2, enemy3, enemy4;
     boolean gameIsOn = true;
-
+    ArrayList<Enemy> enemies;
+    List<List<Integer>> adj;
 
     public GameState(PacmanGUI gui, int mapNumber) {
         super(gui);
@@ -29,10 +31,12 @@ public class GameState extends BaseState {
 
         }
 
-        List<List<Integer>> adj = GraphMap.createAdjList(gameMap);
-
+        adj = GraphMap.createAdjList(gameMap);
         player = new Player(1,1, gameMap);
-        enemy1 = new Enemy(2,1, gameMap);
+        enemy1 = new Enemy(14,1, gameMap, player);
+        enemies = new ArrayList<>();
+        enemies.add(enemy1);
+
         updateMap();
 
         Thread gameLoop = new Thread(() -> {
@@ -44,6 +48,8 @@ public class GameState extends BaseState {
                     }
 
                     player.move();
+                    enemiesHunt();
+
                     SwingUtilities.invokeLater(this::updateMap);
                 }
 
@@ -115,9 +121,46 @@ public class GameState extends BaseState {
 
     }
 
-    @Override
-    public void tick() {
-        player.moveBy(0,0);
+    public void enemiesHunt() {
+
+//        int targetInd = GraphMap.getCellNum(player.getY(), player.getX(), gameMap.length);
+        int[] distance = GraphMap.bfsFromPlayer(adj, player, gameMap.length);
+
+        for (Enemy enemy: enemies) {
+            int curX = enemy.getX();
+            int curY = enemy.getY();
+
+            int minDistX = curX;
+            int minDistY = curY;
+
+            if (gameMap[curY-1][curX] == 0) {
+                if (distance[GraphMap.getCellNum(curY-1, curX, gameMap.length)] < distance[GraphMap.getCellNum(curY, curX, gameMap.length)]) {
+                    minDistY = curY-1;
+
+                }
+            }
+
+            if (gameMap[curY+1][curX] == 0) {
+                if (distance[GraphMap.getCellNum(curY+1, curX, gameMap.length)] < distance[GraphMap.getCellNum(curY, curX, gameMap.length)]) {
+                    minDistY = curY+1;
+                }
+            }
+
+            if (gameMap[curY][curX-1] == 0) {
+                if (distance[GraphMap.getCellNum(curY, curX-1, gameMap.length)] < distance[GraphMap.getCellNum(curY, curX, gameMap.length)]) {
+                    minDistX = curX-1;
+                }
+            }
+            if (gameMap[curY][curX+1] == 0) {
+                if (distance[GraphMap.getCellNum(curY, curX+1, gameMap.length)] < distance[GraphMap.getCellNum(curY, curX, gameMap.length)]) {
+                    minDistX = curX+1;
+                }
+            }
+
+            if (gameMap[minDistY][minDistX] == 0) {
+                enemy.setPos(minDistX, minDistY);
+            }
+        }
     }
 
 }

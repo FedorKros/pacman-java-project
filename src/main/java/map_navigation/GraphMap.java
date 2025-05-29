@@ -6,7 +6,7 @@ import java.util.*;
 
 public class GraphMap {
 
-    public static int[] bfsFromPlayer(List<List<Integer>> adj, Player player) {
+    public static int[] bfsFromPlayer(List<List<Integer>> adj, Player player, int mapLength) {
 
         int playerX = player.getX();
         int playerY = player.getY();
@@ -16,7 +16,7 @@ public class GraphMap {
         Arrays.fill(distance, -1);
 
         Queue<Integer> queue = new LinkedList<>();
-        int playerPos = getCellNum(playerY, playerX, n);
+        int playerPos = getCellNum(playerY, playerX, mapLength);
         distance[playerPos] = 0;
 
         queue.add(playerPos);
