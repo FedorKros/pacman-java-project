@@ -3,6 +3,7 @@ package game_states;
 import game_logic.PacmanGUI;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.KeyEvent;
 
 public class ScoresState extends BaseState {
@@ -10,18 +11,20 @@ public class ScoresState extends BaseState {
 
     public ScoresState(PacmanGUI gui) {
         super(gui);
+        setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+
     }
 
     @Override
     public void setupUI() {
-        label = new JLabel("Scores");
-        add(label);
-        label.setBounds(300,300, 300,50);
+        titleLabel.setText("Highest scores");
+        add(titleLabel);
+
+        for (Component c: this.getComponents()) {
+            ((JComponent)c).setAlignmentX(Component.CENTER_ALIGNMENT);
+        }
     }
-//    @Override
-//    public void processInput() {}
-//    @Override
-//    public void update() {}
+
 
     @Override
     public void keyPressed(KeyEvent e) {

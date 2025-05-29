@@ -8,7 +8,7 @@ public class Character {
     int x, y;
     int[][] gameMap;
     // u d l r are directions
-    private char direction;
+    char direction;
 
 
     public Character(int x, int y, int[][] gameMap) {
@@ -35,6 +35,9 @@ public class Character {
         this.y = y;
     }
 
+    public void move() {
+
+    }
 
     public void moveBy(int horizontalSpeed, int verticalSpeed) {
         int nextX = this.x+horizontalSpeed;
