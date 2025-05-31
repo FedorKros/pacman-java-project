@@ -12,13 +12,8 @@ public class Constants {
 
     public static final Dimension TITLE_LABEL_SIZE = new Dimension(211,50);
 
-
-
-
 //    public static final Font FONT = new Font("assets/fonts/Jersey-Regular.ttf", Font.PLAIN, 18);
     public static final Font FONT_NORMAL, FONT_LARGE;
-
-
 
     static {
         try {
@@ -113,15 +108,13 @@ public class Constants {
             {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}
     };
 
-
-
-
     public static final int TILE_SIZE = 30;
     public static final Dimension SMALL_TILE_DIMENSION = new Dimension(TILE_SIZE, TILE_SIZE);
     public static final Dimension MAP_SIZE = new Dimension(WINDOW_SIZE.height, WINDOW_SIZE.height);
 
-
-    public static final Color WALL_COLOR = new Color(0, 255, 144);
+//    public static final Color WALL_COLOR = new Color(0, 255, 144);
+    public static final Color WALL_COLOR = new Color(1, 24, 216);
+//    public static final Color WALL_COLOR = Color.CYAN;
     public static final Color TITLE_COLOR = Color.ORANGE;
 //    public static final Color BUTTON_TEXT_COLOR = new Color(255, 26, 229);
     public static final Color BUTTON_TEXT_COLOR = Color.ORANGE;
@@ -129,6 +122,8 @@ public class Constants {
     public static final Dimension MENU_BUTTON_VMARGIN = new Dimension(0,30);
     public static final Dimension MENU_TITLE_VMARGIN = new Dimension(0,100);
 
+    public static final Dimension POINT_SIZE = new Dimension(4,4);
+    public static final Color POINT_COLOR = new Color(225,225,225);
     }
 
 

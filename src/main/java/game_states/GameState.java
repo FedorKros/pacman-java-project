@@ -11,7 +11,6 @@ import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.List;
 
-import static common.Constants.FRAME_LENGTH;
 
 public class GameState extends BaseState {
     int[][] gameMap;
@@ -20,6 +19,10 @@ public class GameState extends BaseState {
     boolean gameIsOn = true;
     ArrayList<Enemy> enemies;
     List<List<Integer>> adj;
+    List<Integer> visited = new ArrayList<Integer>();
+    int score = 0;
+    JLabel scoreLabel = new JLabel("Score: " + score);
+
 
     public GameState(PacmanGUI gui, int mapNumber) {
         super(gui);
@@ -31,12 +34,16 @@ public class GameState extends BaseState {
 
         }
 
+        initVisited();
+
+
         adj = GraphMap.createAdjList(gameMap);
         player = new Player(1,1, gameMap);
         enemy1 = new Enemy(14,1, gameMap, player);
         enemies = new ArrayList<>();
         enemies.add(enemy1);
 
+        add(scoreLabel, BorderLayout.WEST);
         updateMap();
 
         Thread gameLoop = new Thread(() -> {
@@ -48,6 +55,8 @@ public class GameState extends BaseState {
                     }
 
                     player.move();
+
+                    SwingUtilities.invokeLater(this::updateScoreLabel);
                     enemiesHunt();
 
                     SwingUtilities.invokeLater(this::updateMap);
@@ -67,25 +76,31 @@ public class GameState extends BaseState {
 
     @Override
     public void keyPressed(KeyEvent e) {
-        if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
-//            player.moveBy(1,0);
-            player.setDirection('r');
+        char direction = ' ';
+        switch (e.getKeyCode()) {
+            case KeyEvent.VK_UP, KeyEvent.VK_W -> direction = 'u';
+            case KeyEvent.VK_DOWN, KeyEvent.VK_D -> direction = 'd';
+            case KeyEvent.VK_LEFT, KeyEvent.VK_S -> direction = 'l';
+            case KeyEvent.VK_RIGHT, KeyEvent.VK_A -> direction = 'r';
         }
-        else if (e.getKeyCode() == KeyEvent.VK_LEFT) {
-//            player.moveBy(-1,0);
-            player.setDirection('l');
-        }
-        else if (e.getKeyCode() == KeyEvent.VK_UP) {
-//            player.moveBy(0,-1);
-            player.setDirection('u');
-        }
-        else if (e.getKeyCode() == KeyEvent.VK_DOWN) {
-//            player.moveBy(0,1);
-            player.setDirection('d');
-        }
-
-
+        player.setDirection(direction);
     }
+
+
+    public void initVisited() {
+        for (int i = 0; i < gameMap.length; i++) {
+            for (int j = 0; j < gameMap.length; j++) {
+                visited.add(0);
+            }
+        }
+    }
+
+
+    public void updateScoreLabel() {
+        scoreLabel.setText("Score: " + score);
+    }
+
+
 
     public void updateMap() {
         removeAll();
@@ -95,72 +110,48 @@ public class GameState extends BaseState {
         for (int i = 0; i < gameMap.length; i++) {
             for (int j = 0; j < gameMap[i].length; j++) {
 
-                JPanel tile = new JPanel();
+                JPanel tile = new JPanel(new GridBagLayout());
                 tile.setPreferredSize(Constants.SMALL_TILE_DIMENSION);
                 if (gameMap[i][j] == 1) {
                     tile.setBackground(Constants.WALL_COLOR);
+                    tile.setBorder(BorderFactory.createLineBorder(Color.GRAY,1));
                 }
-                else tile.setBackground(Color.BLACK);
+                else {
+                    tile.setBackground(Color.BLACK);
+                    if (visited.get(GraphMap.getCellNum(i, j, gameMap.length)) == 0) {
+                        JPanel point = new JPanel();
+                        point.setBackground(Constants.POINT_COLOR);
+                        point.setPreferredSize(Constants.POINT_SIZE);
+                        tile.add(point);
+                    }
+                }
+
                 if (player.getX() == j && player.getY() == i) {
+
+                    tile.removeAll();
                     tile.setBackground(Color.ORANGE);
+                    if (visited.get(GraphMap.getCellNum(i, j, gameMap.length)) == 0) {
+                        score++;
+                        visited.set(GraphMap.getCellNum(i, j, gameMap.length), 1);
+                    }
                 }
                 if (enemy1.getX() == j && enemy1.getY() == i) {
                     tile.setBackground(Color.RED);
+
                 }
-
-
                 c.gridx = j;
                 c.gridy = i;
 
                 add(tile, c);
             }
         }
-
         revalidate();
         repaint();
 
     }
 
     public void enemiesHunt() {
-
-//        int targetInd = GraphMap.getCellNum(player.getY(), player.getX(), gameMap.length);
-        int[] distance = GraphMap.bfsFromPlayer(adj, player, gameMap.length);
-
-        for (Enemy enemy: enemies) {
-            int curX = enemy.getX();
-            int curY = enemy.getY();
-
-            int minDistX = curX;
-            int minDistY = curY;
-
-            if (gameMap[curY-1][curX] == 0) {
-                if (distance[GraphMap.getCellNum(curY-1, curX, gameMap.length)] < distance[GraphMap.getCellNum(curY, curX, gameMap.length)]) {
-                    minDistY = curY-1;
-
-                }
-            }
-
-            if (gameMap[curY+1][curX] == 0) {
-                if (distance[GraphMap.getCellNum(curY+1, curX, gameMap.length)] < distance[GraphMap.getCellNum(curY, curX, gameMap.length)]) {
-                    minDistY = curY+1;
-                }
-            }
-
-            if (gameMap[curY][curX-1] == 0) {
-                if (distance[GraphMap.getCellNum(curY, curX-1, gameMap.length)] < distance[GraphMap.getCellNum(curY, curX, gameMap.length)]) {
-                    minDistX = curX-1;
-                }
-            }
-            if (gameMap[curY][curX+1] == 0) {
-                if (distance[GraphMap.getCellNum(curY, curX+1, gameMap.length)] < distance[GraphMap.getCellNum(curY, curX, gameMap.length)]) {
-                    minDistX = curX+1;
-                }
-            }
-
-            if (gameMap[minDistY][minDistX] == 0) {
-                enemy.setPos(minDistX, minDistY);
-            }
-        }
+        enemy1.chaseOptimally(adj, player);
     }
 
 }
