@@ -22,7 +22,8 @@ public class GameState extends BaseState {
     List<Integer> visited = new ArrayList<Integer>();
     int score = 0;
     int maxScore = 0;
-    JLabel scoreLabel;
+    int lives = 3;
+    JLabel scoreLabel, livesLabel;
     JPanel boardPanel = new JPanel();
 
 
@@ -42,30 +43,50 @@ public class GameState extends BaseState {
 
         initVisited();
         countMaximumScore();
-        scoreLabel = new JLabel("Score: " + score + "/" + maxScore);
+
+        int enemy1X = gameMap.length-2;
+        int enemy1Y = gameMap.length-2;
+        int enemy2X = gameMap.length-2;
+        int enemy2Y = 1;
+        int enemy3X = 1;
+        int enemy3Y = gameMap.length-2;
+
 
         adj = GraphMap.createAdjList(gameMap);
+
         player = new Player(1,1, gameMap);
-        enemy1 = new Enemy(14,1, gameMap, player);
+        enemy1 = new Enemy(enemy1X,enemy1Y, gameMap, player);
+        enemy2 = new Enemy(enemy2X, enemy2Y, gameMap, player);
+        enemy3 = new Enemy(enemy3X, enemy3Y, gameMap, player);
         enemies = new ArrayList<>();
         enemies.add(enemy1);
+        enemies.add(enemy2);
+        enemies.add(enemy3);
 
+
+
+        scoreLabel = new JLabel("Score: " + score + "/" + maxScore);
         scoreLabel.setFont(Constants.FONT_NORMAL);
         scoreLabel.setForeground(Constants.BUTTON_TEXT_COLOR);
 
-        JPanel scorePanel = new JPanel();
-        scorePanel.setBackground(Color.BLACK);
-        scorePanel.setForeground(Color.WHITE);
-        scorePanel.setLayout(new BorderLayout());
-        scorePanel.add(scoreLabel, BorderLayout.NORTH);
+        livesLabel = new JLabel("HP: " + lives);
+        livesLabel.setFont(Constants.FONT_NORMAL);
+        livesLabel.setForeground(Constants.BUTTON_TEXT_COLOR);
+
+        JPanel interfacePanel = new JPanel();
+        interfacePanel.setBackground(Color.BLACK);
+        interfacePanel.setForeground(Color.WHITE);
+        interfacePanel.setLayout(new BoxLayout(interfacePanel, BoxLayout.Y_AXIS));
+        interfacePanel.add(scoreLabel, BorderLayout.NORTH);
+        interfacePanel.add(livesLabel, BorderLayout.NORTH);
 
         JPanel interfaceWrapperPanel = new JPanel();
         interfaceWrapperPanel.setPreferredSize(new Dimension(150,0));
-        interfaceWrapperPanel.setLayout(new BorderLayout());
+        interfaceWrapperPanel.setLayout(new BoxLayout(interfaceWrapperPanel, BoxLayout.Y_AXIS));
         interfaceWrapperPanel.setBackground(Color.BLACK);
+        interfaceWrapperPanel.add(interfacePanel);
+        interfaceWrapperPanel.add(livesLabel, BorderLayout.NORTH);
 
-
-        interfaceWrapperPanel.add(scorePanel,BorderLayout.NORTH);
 
         add(interfaceWrapperPanel, BorderLayout.WEST);
         add(boardPanel, BorderLayout.CENTER);
@@ -77,19 +98,17 @@ public class GameState extends BaseState {
         Thread gameLoop = new Thread(() -> {
                 while (gameIsOn) {
                     try {
-                        Thread.sleep(500);
+                        Thread.sleep(350);
                     } catch (InterruptedException e) {
                         throw new RuntimeException(e);
                     }
 
                     player.move();
-
                     enemiesHunt();
-                    SwingUtilities.invokeLater(this::updateScoreLabel);
 
+                    SwingUtilities.invokeLater(this::updateInterfaceLabels);
                     SwingUtilities.invokeLater(this::updateMap);
                 }
-
         });
 
         gameLoop.start();
@@ -136,8 +155,9 @@ public class GameState extends BaseState {
     }
 
 
-    public void updateScoreLabel() {
+    public void updateInterfaceLabels() {
         scoreLabel.setText("Score: " + score + "/" + maxScore);
+        livesLabel.setText("HP: " + lives);
     }
 
 
@@ -175,9 +195,11 @@ public class GameState extends BaseState {
                         visited.set(GraphMap.getCellNum(i, j, gameMap.length), 1);
                     }
                 }
-                if (enemy1.getX() == j && enemy1.getY() == i) {
-                    tile.setBackground(Color.RED);
 
+                for (Enemy e : enemies) {
+                    if (e.getX() == j && e.getY() == i) {
+                        tile.setBackground(Color.RED);
+                    }
                 }
                 c.gridx = j;
                 c.gridy = i;
@@ -191,7 +213,16 @@ public class GameState extends BaseState {
     }
 
     public void enemiesHunt() {
-        enemy1.chaseOptimally(adj, player);
-    }
+//        enemy1.chaseOptimally(adj, player);
+        for (Enemy enemy : enemies) {
+            enemy.chaseSilly(adj, player);
+        if (enemy.getX() == player.getX() && enemy.getY() == player.getY()) {
+            if (!enemy.getInCooldown()) {
+                lives -= 1;
+                enemy.cooldown();
+            }
+        }
+
+    }}
 
 }

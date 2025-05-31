@@ -6,7 +6,8 @@ import map_navigation.GraphMap;
 
 public class Enemy extends Character {
     Player target;
-
+    int cooldownTimeMs = 3000;
+    boolean inCooldown = false;
 
     public Enemy(int x, int y, int[][] gameMap, Player target) {
         super(x, y, gameMap);
@@ -14,8 +15,28 @@ public class Enemy extends Character {
 
     }
 
+    public void cooldown() {
+        inCooldown = true;
+        if (inCooldown) {
+            new Thread(() -> {
+                try {
+                    Thread.sleep(3000);
+                }
+                catch (InterruptedException e) {
+                    System.out.println(e.getMessage());
+                }
+
+                inCooldown = false;
+            }).start();
+        }
+    }
+
+    public boolean getInCooldown() {
+        return inCooldown;
+    }
+
     public void chaseOptimally(List<List<Integer>> adj, Player player) {
-        int[] distance = GraphMap.bfsFromPlayer(adj, player, gameMap.length);
+        if (!inCooldown) {int[] distance = GraphMap.bfsFromPlayer(adj, player, gameMap.length);
 
             int curX = this.getX();
             int curY = this.getY();
@@ -52,9 +73,16 @@ public class Enemy extends Character {
             }
 
     }
+    }
 
-    public void chaseRandomly(Player player) {
-//        if
+
+    public void chaseSilly(List<List<Integer>> adj, Player player) {
+        int nextCellInd = GraphMap.callDfsFromEnemy(adj, player, gameMap.length, this);
+        if (nextCellInd > 0) {
+            int nextY = nextCellInd / gameMap.length;
+            int nextX = nextCellInd % gameMap.length;
+            setPos(nextX, nextY);
+        }
     }
 
 
