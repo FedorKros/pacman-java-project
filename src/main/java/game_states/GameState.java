@@ -21,11 +21,17 @@ public class GameState extends BaseState {
     List<List<Integer>> adj;
     List<Integer> visited = new ArrayList<Integer>();
     int score = 0;
-    JLabel scoreLabel = new JLabel("Score: " + score);
+    int maxScore = 0;
+    JLabel scoreLabel;
+    JPanel boardPanel = new JPanel();
+
 
 
     public GameState(PacmanGUI gui, int mapNumber) {
         super(gui);
+        setLayout(new BorderLayout());
+
+
 
         switch (mapNumber) {
             case 1 -> gameMap = Constants.SMALL_MAP;
@@ -35,7 +41,8 @@ public class GameState extends BaseState {
         }
 
         initVisited();
-
+        countMaximumScore();
+        scoreLabel = new JLabel("Score: " + score + "/" + maxScore);
 
         adj = GraphMap.createAdjList(gameMap);
         player = new Player(1,1, gameMap);
@@ -43,7 +50,28 @@ public class GameState extends BaseState {
         enemies = new ArrayList<>();
         enemies.add(enemy1);
 
-        add(scoreLabel, BorderLayout.WEST);
+        scoreLabel.setFont(Constants.FONT_NORMAL);
+        scoreLabel.setForeground(Constants.BUTTON_TEXT_COLOR);
+
+        JPanel scorePanel = new JPanel();
+        scorePanel.setBackground(Color.BLACK);
+        scorePanel.setForeground(Color.WHITE);
+        scorePanel.setLayout(new BorderLayout());
+        scorePanel.add(scoreLabel, BorderLayout.NORTH);
+
+        JPanel interfaceWrapperPanel = new JPanel();
+        interfaceWrapperPanel.setPreferredSize(new Dimension(150,0));
+        interfaceWrapperPanel.setLayout(new BorderLayout());
+        interfaceWrapperPanel.setBackground(Color.BLACK);
+
+
+        interfaceWrapperPanel.add(scorePanel,BorderLayout.NORTH);
+
+        add(interfaceWrapperPanel, BorderLayout.WEST);
+        add(boardPanel, BorderLayout.CENTER);
+        boardPanel.setFocusable(true);
+        boardPanel.requestFocus();
+
         updateMap();
 
         Thread gameLoop = new Thread(() -> {
@@ -56,8 +84,8 @@ public class GameState extends BaseState {
 
                     player.move();
 
-                    SwingUtilities.invokeLater(this::updateScoreLabel);
                     enemiesHunt();
+                    SwingUtilities.invokeLater(this::updateScoreLabel);
 
                     SwingUtilities.invokeLater(this::updateMap);
                 }
@@ -73,15 +101,27 @@ public class GameState extends BaseState {
 
     }
 
+    public void countMaximumScore() {
+        maxScore = 0;
+        for (int i = 0; i < gameMap.length; i++) {
+            for (int j = 0; j < gameMap.length; j++) {
+                if (gameMap[i][j] == 0) {
+                    maxScore++;
+                }
+            }
+        }
+
+    }
+
 
     @Override
     public void keyPressed(KeyEvent e) {
         char direction = ' ';
         switch (e.getKeyCode()) {
             case KeyEvent.VK_UP, KeyEvent.VK_W -> direction = 'u';
-            case KeyEvent.VK_DOWN, KeyEvent.VK_D -> direction = 'd';
-            case KeyEvent.VK_LEFT, KeyEvent.VK_S -> direction = 'l';
-            case KeyEvent.VK_RIGHT, KeyEvent.VK_A -> direction = 'r';
+            case KeyEvent.VK_DOWN, KeyEvent.VK_S -> direction = 'd';
+            case KeyEvent.VK_LEFT, KeyEvent.VK_A -> direction = 'l';
+            case KeyEvent.VK_RIGHT, KeyEvent.VK_D -> direction = 'r';
         }
         player.setDirection(direction);
     }
@@ -97,16 +137,16 @@ public class GameState extends BaseState {
 
 
     public void updateScoreLabel() {
-        scoreLabel.setText("Score: " + score);
+        scoreLabel.setText("Score: " + score + "/" + maxScore);
     }
 
 
 
     public void updateMap() {
-        removeAll();
-        setLayout(new GridBagLayout());
+        boardPanel.removeAll();
+        boardPanel.setLayout(new GridBagLayout());
         GridBagConstraints c = new GridBagConstraints();
-        setBackground(Color.BLACK);
+        boardPanel.setBackground(Color.BLACK);
         for (int i = 0; i < gameMap.length; i++) {
             for (int j = 0; j < gameMap[i].length; j++) {
 
@@ -142,11 +182,11 @@ public class GameState extends BaseState {
                 c.gridx = j;
                 c.gridy = i;
 
-                add(tile, c);
+                boardPanel.add(tile, c);
             }
         }
-        revalidate();
-        repaint();
+        boardPanel.revalidate();
+        boardPanel.repaint();
 
     }
 
