@@ -8,6 +8,7 @@ import javax.swing.*;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.io.IOException;
 
 public class MainMenuState extends BaseState {
     JButton playButton, scoresButton, quitButton;
@@ -54,7 +55,11 @@ public class MainMenuState extends BaseState {
 //            gui.changeState(new GameState(gui));
             gui.changeState(new SelectMapState(gui));
         } else if (e.getSource() == scoresButton) {
-            gui.changeState(new ScoresState(gui));
+            try {
+                gui.changeState(new ScoresState(gui));
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
         } else if (e.getSource() == quitButton) {
             System.exit(0);
         }

@@ -34,6 +34,14 @@ public class Score implements Serializable, Comparable<Score> {
         return playTime;
     }
 
+    public int getMapSize() {
+        return mapSize;
+    }
+
+    public boolean isWon() {
+        return won;
+    }
+
     @Override
     public int compareTo(Score o) {
         return this.score - o.score;
