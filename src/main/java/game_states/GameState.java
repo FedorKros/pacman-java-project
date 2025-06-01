@@ -1,13 +1,19 @@
 package game_states;
+import buttons.MouseHover;
+import buttons.SetupButton;
 import characters.Enemy;
 import characters.Player;
 import common.Constants;
+import common.Tools;
 import game_logic.PacmanGUI;
 import map_navigation.GraphMap;
+import scores.Score;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,22 +23,23 @@ public class GameState extends BaseState {
     Player player;
     Enemy enemy1, enemy2, enemy3, enemy4;
     boolean gameIsOn = true;
+    boolean lost = false;
     ArrayList<Enemy> enemies;
     List<List<Integer>> adj;
     List<Integer> visited = new ArrayList<Integer>();
     int score = 0;
     int maxScore = 0;
     int lives = 3;
-    JLabel scoreLabel, livesLabel;
+    JLabel scoreLabel, livesLabel, timeLabel;
     JPanel boardPanel = new JPanel();
-
+    long startTime;
 
 
     public GameState(PacmanGUI gui, int mapNumber) {
         super(gui);
         setLayout(new BorderLayout());
 
-
+        startTime = System.currentTimeMillis();
 
         switch (mapNumber) {
             case 1 -> gameMap = Constants.SMALL_MAP;
@@ -55,7 +62,7 @@ public class GameState extends BaseState {
         adj = GraphMap.createAdjList(gameMap);
 
         player = new Player(1,1, gameMap);
-        enemy1 = new Enemy(enemy1X,enemy1Y, gameMap, player);
+        enemy1 = new Enemy(enemy1X,enemy1Y, gameMap, player, true);
         enemy2 = new Enemy(enemy2X, enemy2Y, gameMap, player);
         enemy3 = new Enemy(enemy3X, enemy3Y, gameMap, player);
         enemies = new ArrayList<>();
@@ -73,12 +80,18 @@ public class GameState extends BaseState {
         livesLabel.setFont(Constants.FONT_NORMAL);
         livesLabel.setForeground(Constants.BUTTON_TEXT_COLOR);
 
+        timeLabel = new JLabel("Time: " + 0);
+        timeLabel.setFont(Constants.FONT_NORMAL);
+        timeLabel.setForeground(Constants.BUTTON_TEXT_COLOR);
+
         JPanel interfacePanel = new JPanel();
         interfacePanel.setBackground(Color.BLACK);
         interfacePanel.setForeground(Color.WHITE);
         interfacePanel.setLayout(new BoxLayout(interfacePanel, BoxLayout.Y_AXIS));
         interfacePanel.add(scoreLabel, BorderLayout.NORTH);
         interfacePanel.add(livesLabel, BorderLayout.NORTH);
+        interfacePanel.add(timeLabel, BorderLayout.NORTH);
+
 
         JPanel interfaceWrapperPanel = new JPanel();
         interfaceWrapperPanel.setPreferredSize(new Dimension(150,0));
@@ -86,6 +99,8 @@ public class GameState extends BaseState {
         interfaceWrapperPanel.setBackground(Color.BLACK);
         interfaceWrapperPanel.add(interfacePanel);
         interfaceWrapperPanel.add(livesLabel, BorderLayout.NORTH);
+
+
 
 
         add(interfaceWrapperPanel, BorderLayout.WEST);
@@ -98,7 +113,7 @@ public class GameState extends BaseState {
         Thread gameLoop = new Thread(() -> {
                 while (gameIsOn) {
                     try {
-                        Thread.sleep(350);
+                        Thread.sleep(Constants.GAME_FRAME_LENGTH);
                     } catch (InterruptedException e) {
                         throw new RuntimeException(e);
                     }
@@ -108,6 +123,8 @@ public class GameState extends BaseState {
 
                     SwingUtilities.invokeLater(this::updateInterfaceLabels);
                     SwingUtilities.invokeLater(this::updateMap);
+
+
                 }
         });
 
@@ -132,6 +149,11 @@ public class GameState extends BaseState {
 
     }
 
+    public int playTime() {
+        long timePlayed = System.currentTimeMillis() - startTime;
+        return (int)(timePlayed/1000);
+
+    }
 
     @Override
     public void keyPressed(KeyEvent e) {
@@ -143,8 +165,17 @@ public class GameState extends BaseState {
             case KeyEvent.VK_RIGHT, KeyEvent.VK_D -> direction = 'r';
         }
         player.setDirection(direction);
+
+        if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+            gameIsOn = false;
+//            SwingUtilities.getWindowAncestor(this).dispose();
+        }
+
+
     }
 
+
+//    public void
 
     public void initVisited() {
         for (int i = 0; i < gameMap.length; i++) {
@@ -158,6 +189,7 @@ public class GameState extends BaseState {
     public void updateInterfaceLabels() {
         scoreLabel.setText("Score: " + score + "/" + maxScore);
         livesLabel.setText("HP: " + lives);
+        timeLabel.setText("Time: " + playTime());
     }
 
 
@@ -213,16 +245,90 @@ public class GameState extends BaseState {
     }
 
     public void enemiesHunt() {
-//        enemy1.chaseOptimally(adj, player);
         for (Enemy enemy : enemies) {
-            enemy.chaseSilly(adj, player);
+            if (enemy.isSmart()) enemy.chaseOptimally(adj, player);
+            else enemy.chaseSilly(adj, player);
         if (enemy.getX() == player.getX() && enemy.getY() == player.getY()) {
             if (!enemy.getInCooldown()) {
-                lives -= 1;
+                lives -= 3;
+                if (lives <= 0) {
+                    lost = true;
+                    gameOver();
+                }
                 enemy.cooldown();
             }
         }
 
     }}
+
+    public void gameOver() {
+        gameIsOn = false;
+        this.removeAll();
+        this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+
+        JLabel gameOverLabel = new JLabel();
+        if (lost) gameOverLabel.setText("Game Over");
+        else gameOverLabel.setText("You won!");
+        gameOverLabel.setForeground(Constants.BUTTON_TEXT_COLOR);
+        gameOverLabel.setFont(Constants.FONT_LARGE);
+        gameOverLabel.setHorizontalAlignment(SwingConstants.CENTER);
+//        this.add(new JLabel(String.valueOf(this.score)));
+        JLabel scoreLabel = new JLabel("Your score: " + score);
+        scoreLabel.setForeground(Constants.BUTTON_TEXT_COLOR);
+        scoreLabel.setFont(Constants.FONT_NORMAL);
+
+        JLabel enterNameLabel = new JLabel("Enter your nickname: ");
+        enterNameLabel.setForeground(Constants.BUTTON_TEXT_COLOR);
+        enterNameLabel.setFont(Constants.FONT_NORMAL);
+
+
+        JTextField enterNamePane = new JTextField();
+        enterNamePane.setEditable(true);
+        enterNamePane.setBackground(Color.BLACK);
+        enterNamePane.setBorder(BorderFactory.createLineBorder(Constants.POINT_COLOR,2, true));
+        enterNamePane.setMaximumSize(new Dimension(200,30));
+        enterNamePane.setFont(Constants.FONT_NORMAL);
+        enterNamePane.setForeground(Constants.POINT_COLOR);
+
+
+
+        JButton submitButton = SetupButton.setupButton("Record score", this);
+        submitButton.addMouseListener(new MouseHover());
+
+        submitButton.addActionListener(e -> {
+            String nickname = enterNamePane.getText().trim();
+            if (!nickname.isEmpty()) {
+                try {
+                    Tools.saveScore(new Score(score, nickname, playTime(), !lost, gameMap.length));
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
+            }
+        });
+
+
+        this.add(Box.createVerticalGlue());
+        this.add(gameOverLabel); add(Box.createRigidArea(Constants.MENU_BUTTON_VMARGIN));
+        this.add(scoreLabel); add(Box.createRigidArea(Constants.MENU_BUTTON_VMARGIN));
+        this.add(enterNameLabel); add(Box.createRigidArea(Constants.MENU_BUTTON_VMARGIN));
+        this.add(enterNamePane); add(Box.createRigidArea(Constants.MENU_BUTTON_VMARGIN));
+        this.add(submitButton); add(Box.createRigidArea(Constants.MENU_BUTTON_VMARGIN));
+        this.add(Box.createVerticalGlue());
+
+
+
+
+
+        for (Component c: getComponents()) {
+            if (c instanceof JComponent) {
+                ((JComponent) c).setAlignmentX(Component.CENTER_ALIGNMENT);
+            }
+        }
+
+
+        revalidate();
+        repaint();
+    }
+
 
 }

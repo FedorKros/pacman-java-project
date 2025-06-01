@@ -6,13 +6,21 @@ import map_navigation.GraphMap;
 
 public class Enemy extends Character {
     Player target;
-    int cooldownTimeMs = 3000;
+    static int cooldownTimeMs = 4000;
     boolean inCooldown = false;
+    boolean smart;
 
     public Enemy(int x, int y, int[][] gameMap, Player target) {
         super(x, y, gameMap);
         this.target = target;
+        this.smart = false;
 
+    }
+
+    public Enemy(int x, int y, int[][] gameMap, Player target, boolean smart) {
+        super(x, y, gameMap);
+        this.target = target;
+        this.smart = smart;
     }
 
     public void cooldown() {
@@ -20,7 +28,7 @@ public class Enemy extends Character {
         if (inCooldown) {
             new Thread(() -> {
                 try {
-                    Thread.sleep(3000);
+                    Thread.sleep(cooldownTimeMs);
                 }
                 catch (InterruptedException e) {
                     System.out.println(e.getMessage());
@@ -34,6 +42,11 @@ public class Enemy extends Character {
     public boolean getInCooldown() {
         return inCooldown;
     }
+
+    public boolean isSmart() {
+        return smart;
+    }
+
 
     public void chaseOptimally(List<List<Integer>> adj, Player player) {
         if (!inCooldown) {int[] distance = GraphMap.bfsFromPlayer(adj, player, gameMap.length);
@@ -77,14 +90,15 @@ public class Enemy extends Character {
 
 
     public void chaseSilly(List<List<Integer>> adj, Player player) {
-        int nextCellInd = GraphMap.callDfsFromEnemy(adj, player, gameMap.length, this);
-        if (nextCellInd > 0) {
-            int nextY = nextCellInd / gameMap.length;
-            int nextX = nextCellInd % gameMap.length;
-            setPos(nextX, nextY);
+        if (!inCooldown) {
+            int nextCellInd = GraphMap.callDfsFromEnemy(adj, player, gameMap.length, this);
+            if (nextCellInd > 0) {
+                int nextY = nextCellInd / gameMap.length;
+                int nextX = nextCellInd % gameMap.length;
+                setPos(nextX, nextY);
+            }
         }
     }
-
 
 
 
