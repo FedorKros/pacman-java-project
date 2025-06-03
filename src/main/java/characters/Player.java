@@ -3,7 +3,12 @@ package characters;
 import bonuses.Bonus;
 import common.Constants;
 
+import javax.imageio.ImageIO;
+import javax.swing.*;
 import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 
 
 public class Player extends Character {
@@ -20,11 +25,61 @@ public class Player extends Character {
     boolean isHunting = false;
     double scoreMultiplier = 1;
 
+    // animation fields
+    BufferedImage[] animationImages;
+    int currentImage = 0;
+    int imageDuration = 200;
+
 
     public Player(int x, int y, int[][] gameMap) {
         super(x, y, gameMap);
-        direction = '0';
+        direction = 'r';
+
+        try {
+            loadImages();
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to load pacman animation images!" + e);
+        }
+
+
+        new Thread(() -> {
+            while (true) {
+                try {
+                    Thread.sleep(imageDuration);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+                currentImage = (currentImage + 1) % animationImages.length;
+            }
+        }).start();
+
+
     }
+
+    private void loadImages() throws IOException {
+
+        if (direction == '0') direction = 'r';
+            try {
+                animationImages = new BufferedImage[]{
+                        ImageIO.read(new File("assets/animations/pacman/" + direction + "/p1.png")),
+                        ImageIO.read(new File("assets/animations/pacman/" + direction + "/p2.png")),
+                        ImageIO.read(new File("assets/animations/pacman/" + direction + "/p3.png")),
+                        ImageIO.read(new File("assets/animations/pacman/" + direction + "/p4.png"))
+                };
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+
+    }
+
+
+    public BufferedImage getAnimationImage() {
+        return animationImages[currentImage];
+    }
+
+
 
     @Override
     public void draw(Graphics g) {
@@ -72,21 +127,29 @@ public class Player extends Character {
         }
     }
 
-    public void setDirection(char d) {
-
+    public void setDirection(char d) throws IOException {
+        char dirBefore = direction;
         switch (d) {
             case 'u' -> {
                 if (gameMap[y-1][x] == 0) direction = d;
+
             }
             case 'd' -> {
                 if (gameMap[y+1][x] == 0) direction = d;
+
             }
             case 'l' -> {
                 if (gameMap[y][x-1] == 0) direction = d;
+
             }
             case 'r' -> {
                 if (gameMap[y][x+1] == 0) direction = d;
+
             }
+        }
+        char dirAfter = direction;
+        if (dirBefore != dirAfter) {
+            loadImages();
         }
     }
 

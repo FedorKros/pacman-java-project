@@ -1,8 +1,12 @@
 package characters;
 
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.util.List;
 import java.util.Queue;
 import map_navigation.GraphMap;
+
+import javax.imageio.ImageIO;
 
 public class Enemy extends Character {
     Player target;
@@ -10,18 +14,79 @@ public class Enemy extends Character {
     boolean inCooldown = false;
     boolean smart;
 
+    BufferedImage[] animationImages;
+    int currentImage = 0;
+    int imageDuration = 200;
+    char prevDirection = '0';
+    String name;
 
-    public Enemy(int x, int y, int[][] gameMap, Player target) {
+
+    public Enemy(int x, int y, int[][] gameMap, Player target, String name) {
         super(x, y, gameMap);
         this.target = target;
+        this.name = name;
         this.smart = false;
+
+        try {
+            loadImages();
+            launchAnimationThread();
+            prevDirection = direction;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
     }
 
-    public Enemy(int x, int y, int[][] gameMap, Player target, boolean smart) {
+    public Enemy(int x, int y, int[][] gameMap, Player target, String name, boolean smart) {
         super(x, y, gameMap);
         this.target = target;
+        this.name = name;
         this.smart = smart;
+
+        try {
+            loadImages();
+            launchAnimationThread();
+            prevDirection = direction;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+
+
+    public void loadImages() throws Exception {
+        try {
+            if (direction != 'r' && direction != 'l' && direction != 'u' && direction != 'd') direction = 'r';
+            animationImages = new BufferedImage[] {
+                    ImageIO.read(new File("assets/animations/enemies/" + name + "/" + direction + "/p1.png")),
+                    ImageIO.read(new File("assets/animations/enemies/" + name + "/" + direction + "/p2.png"))
+            };
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
+
+    public BufferedImage getAnimationImage() {
+        return animationImages[currentImage];
+    }
+
+
+    public void launchAnimationThread() {
+
+        new Thread(() -> {
+            while (true) {
+                try {
+                    Thread.sleep(imageDuration);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+                if (animationImages != null) {}
+                currentImage = (currentImage + 1) % animationImages.length;
+            }
+        }).start();
     }
 
     public void cooldown() {
@@ -65,6 +130,7 @@ public class Enemy extends Character {
                     if (distance[GraphMap.getCellNum(curY - 1, curX, gameMap.length)] < distance[GraphMap.getCellNum(curY, curX, gameMap.length)]) {
                         minDistX = curX;
                         minDistY = curY - 1;
+                        direction = 'u';
 
                     }
                 }
@@ -72,18 +138,21 @@ public class Enemy extends Character {
                     if (distance[GraphMap.getCellNum(curY + 1, curX, gameMap.length)] < distance[GraphMap.getCellNum(curY, curX, gameMap.length)]) {
                         minDistY = curY + 1;
                         minDistX = curX;
+                        direction = 'd';
                     }
                 }
                 if (gameMap[curY][curX - 1] == 0) {
                     if (distance[GraphMap.getCellNum(curY, curX - 1, gameMap.length)] < distance[GraphMap.getCellNum(curY, curX, gameMap.length)]) {
                         minDistX = curX - 1;
                         minDistY = curY;
+                        direction = 'l';
                     }
                 }
                 if (gameMap[curY][curX + 1] == 0) {
                     if (distance[GraphMap.getCellNum(curY, curX + 1, gameMap.length)] < distance[GraphMap.getCellNum(curY, curX, gameMap.length)]) {
                         minDistX = curX + 1;
                         minDistY = curY;
+                        direction = 'r';
                     }
                 }
 
@@ -97,6 +166,7 @@ public class Enemy extends Character {
                         if (distance[GraphMap.getCellNum(curY - 1, curX, gameMap.length)] > distance[GraphMap.getCellNum(curY, curX, gameMap.length)]) {
                             minDistX = curX;
                             minDistY = curY - 1;
+                            direction = 'u';
 
                         }
                     }
@@ -104,18 +174,21 @@ public class Enemy extends Character {
                         if (distance[GraphMap.getCellNum(curY + 1, curX, gameMap.length)] > distance[GraphMap.getCellNum(curY, curX, gameMap.length)]) {
                             minDistY = curY + 1;
                             minDistX = curX;
+                            direction = 'd';
                         }
                     }
                     if (gameMap[curY][curX - 1] == 0) {
                         if (distance[GraphMap.getCellNum(curY, curX - 1, gameMap.length)] > distance[GraphMap.getCellNum(curY, curX, gameMap.length)]) {
                             minDistX = curX - 1;
                             minDistY = curY;
+                            direction = 'l';
                         }
                     }
                     if (gameMap[curY][curX + 1] == 0) {
                         if (distance[GraphMap.getCellNum(curY, curX + 1, gameMap.length)] > distance[GraphMap.getCellNum(curY, curX, gameMap.length)]) {
                             minDistX = curX + 1;
                             minDistY = curY;
+                            direction = 'r';
                         }
                     }
 
@@ -125,7 +198,17 @@ public class Enemy extends Character {
 
             }
         lastStepTime = now;
+
+            if (prevDirection != direction) {
+                try {
+                    loadImages();
+                    prevDirection = direction;
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            }
     }
+
     }
 
     public void chaseSilly(List<List<Integer>> adj, Player player) {
@@ -135,7 +218,26 @@ public class Enemy extends Character {
             if (nextCellInd > 0) {
                 int nextY = nextCellInd / gameMap.length;
                 int nextX = nextCellInd % gameMap.length;
+
+                prevDirection = direction;
+
+                if (nextX > x) direction = 'r';
+                else if (nextX < x) direction = 'l';
+                else if (nextY > y) direction = 'd';
+                else if (nextY < y) direction = 'u';
+
+                if (prevDirection != direction) {
+                    try {
+                        loadImages();
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+
+
                 setPos(nextX, nextY);
+
+
             }
             lastStepTime = now;
         }

@@ -10,6 +10,7 @@ import game_logic.PacmanGUI;
 import map_navigation.GraphMap;
 import scores.Score;
 
+import javax.management.remote.rmi.RMIConnectionImpl;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -70,9 +71,9 @@ public class GameState extends BaseState {
         adj = GraphMap.createAdjList(gameMap);
 
         player = new Player(1,1, gameMap);
-        enemy1 = new Enemy(enemy1X,enemy1Y, gameMap, player, true);
-        enemy2 = new Enemy(enemy2X, enemy2Y, gameMap, player);
-        enemy3 = new Enemy(enemy3X, enemy3Y, gameMap, player);
+        enemy1 = new Enemy(enemy1X,enemy1Y, gameMap, player, "blue", true);
+        enemy2 = new Enemy(enemy2X, enemy2Y, gameMap, player, "red");
+        enemy3 = new Enemy(enemy3X, enemy3Y, gameMap, player, "pink");
         enemies = new ArrayList<>();
         enemies.add(enemy1);
         enemies.add(enemy2);
@@ -194,7 +195,11 @@ public class GameState extends BaseState {
             case KeyEvent.VK_LEFT, KeyEvent.VK_A -> direction = 'l';
             case KeyEvent.VK_RIGHT, KeyEvent.VK_D -> direction = 'r';
         }
-        player.setDirection(direction);
+        try {
+            player.setDirection(direction);
+        } catch (IOException ex) {
+            throw new RuntimeException(ex);
+        }
 
         if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
             if (gameIsOn) {
@@ -251,7 +256,9 @@ public class GameState extends BaseState {
 
                 if (player.getX() == j && player.getY() == i) {
                     tile.removeAll();
-                    tile.setBackground(Color.ORANGE);
+//                    tile.setBackground(Color.ORANGE);
+                    JLabel pacman = new JLabel(new ImageIcon(player.getAnimationImage()));
+                    tile.add(pacman);
                     if (visited.get(GraphMap.getCellNum(i, j, gameMap.length)) == 0) {
                         player.increaseScore();
                         visited.set(GraphMap.getCellNum(i, j, gameMap.length), 1);
@@ -277,7 +284,9 @@ public class GameState extends BaseState {
 
                 for (Enemy e : enemies) {
                     if (e.getX() == j && e.getY() == i) {
-                        tile.setBackground(Color.RED);
+
+                        JLabel en = new JLabel(new ImageIcon(e.getAnimationImage()));
+                        tile.add(en);
                     }
                 }
 
@@ -346,8 +355,6 @@ public class GameState extends BaseState {
         enterNamePane.setMaximumSize(new Dimension(200,30));
         enterNamePane.setFont(Constants.FONT_NORMAL);
         enterNamePane.setForeground(Constants.POINT_COLOR);
-        enterNamePane.setBackground(Color.BLACK);
-
 
 
         JButton submitButton = SetupButton.setupButton("Record score", this);
