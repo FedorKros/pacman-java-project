@@ -2,24 +2,23 @@ package game_states;
 
 import buttons.MouseHover;
 import buttons.SetupButton;
+import common.Constants;
 import common.Tools;
 import game_logic.PacmanGUI;
 import scores.Score;
 import scores.ScoreComponent;
 
 import javax.swing.*;
-import javax.swing.border.Border;
 import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Set;
 
 public class ScoresState extends BaseState {
     JLabel label;
-    JPanel scorePanel;
+    JPanel scorePanel, legendPanel, topPanel;
     ArrayList<Score> scores;
     JButton menuButton;
     JPanel buttonPanel, scrollPanel;
@@ -27,30 +26,58 @@ public class ScoresState extends BaseState {
     public ScoresState(PacmanGUI gui) throws IOException {
         super(gui);
 
-
-
-//        setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         setLayout(new BorderLayout());
+
+
+        topPanel = new JPanel();
+        topPanel.setLayout(new BoxLayout(topPanel, BoxLayout.Y_AXIS));
+        topPanel.setOpaque(false);
+
+        legendPanel = new JPanel();
+        legendPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 100, 0));
+        legendPanel.setOpaque(false);
 
         titleLabel.setText("Highest scores");
         titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-//        add(Box.createRigidArea(new Dimension(10, 10)));
-        add(titleLabel, BorderLayout.NORTH);
-//        add(Box.createRigidArea(new Dimension(10, 10)));
+        JLabel scoreLabel = new JLabel("Score");
+        JLabel nicknameLabel = new JLabel("Nickname");
+        JLabel timeLabel = new JLabel("Playtime");
+        JLabel wonLabel = new JLabel("Game status");
+        JLabel mapLabel = new JLabel("Map size");
+
+        legendPanel.add(scoreLabel);
+        legendPanel.add(nicknameLabel);
+        legendPanel.add(timeLabel);
+        legendPanel.add(wonLabel);
+        legendPanel.add(mapLabel);
+
+        for (Component c : legendPanel.getComponents()) {
+            c.setFont(Constants.FONT_NORMAL);
+            c.setForeground(Constants.BUTTON_TEXT_COLOR);
+        }
+
+
+
+
+        topPanel.add(titleLabel);
+        topPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+        topPanel.add(legendPanel);
+
+
+
+
 
         scores = Tools.loadScores();
-
         scorePanel = new JPanel();
-//        scorePanel.setBackground(Color.BLACK);
         scorePanel.setLayout(new BoxLayout(scorePanel, BoxLayout.Y_AXIS));
-
 
 
         menuButton = SetupButton.setupButton("Menu", this);
         buttonPanel = new JPanel();
         scrollPanel = new JPanel();
-//        scrollPanel.setLayout(new BorderLayout(5, 5));
+
         for (Score score : scores) {
             ScoreComponent line = new ScoreComponent(score.getScore(), score.getNickname(),score.getPlayTime(), score.isWon(), score.getMapSize());
             scorePanel.add(line);
@@ -59,8 +86,8 @@ public class ScoresState extends BaseState {
 
         JScrollPane scrollPane = new JScrollPane(scorePanel);
         scrollPane.setBorder(BorderFactory.createLoweredBevelBorder());
-        scrollPane.setPreferredSize(new Dimension(900,600));
-//        scrollPane.setMaximumSize(new Dimension(600,500));
+        scrollPane.setPreferredSize(new Dimension(900,530));
+
 
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
@@ -81,11 +108,11 @@ public class ScoresState extends BaseState {
 
         menuButton.setHorizontalAlignment(SwingConstants.CENTER);
         menuButton.addMouseListener(new MouseHover());
-//        buttonPanel.setBackground(Color.BLACK);
+
         buttonPanel.add(menuButton);
         buttonPanel.setOpaque(false);
 
-
+        add(topPanel, BorderLayout.NORTH);
         add(scrollPanel, BorderLayout.CENTER);
         add(buttonPanel, BorderLayout.SOUTH);
     }
