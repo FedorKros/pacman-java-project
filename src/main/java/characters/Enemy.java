@@ -10,6 +10,7 @@ public class Enemy extends Character {
     boolean inCooldown = false;
     boolean smart;
 
+
     public Enemy(int x, int y, int[][] gameMap, Player target) {
         super(x, y, gameMap);
         this.target = target;
@@ -47,56 +48,96 @@ public class Enemy extends Character {
         return smart;
     }
 
-
     public void chaseOptimally(List<List<Integer>> adj, Player player) {
-        if (!inCooldown) {int[] distance = GraphMap.bfsFromPlayer(adj, player, gameMap.length);
+        long now = System.currentTimeMillis();
+        if (!inCooldown && now - lastStepTime >= stepCooldown) {
+
+            int[] distance = GraphMap.bfsFromPlayer(adj, player, gameMap.length);
 
             int curX = this.getX();
             int curY = this.getY();
             int minDistX = curX;
             int minDistY = curY;
-            if (gameMap[curY-1][curX] == 0) {
-                if (distance[GraphMap.getCellNum(curY-1, curX, gameMap.length)] < distance[GraphMap.getCellNum(curY, curX, gameMap.length)]) {
-                    minDistX = curX;
-                    minDistY = curY-1;
 
+            if (!player.isHunting) {
+
+                if (gameMap[curY - 1][curX] == 0) {
+                    if (distance[GraphMap.getCellNum(curY - 1, curX, gameMap.length)] < distance[GraphMap.getCellNum(curY, curX, gameMap.length)]) {
+                        minDistX = curX;
+                        minDistY = curY - 1;
+
+                    }
                 }
-            }
-            if (gameMap[curY+1][curX] == 0) {
-                if (distance[GraphMap.getCellNum(curY+1, curX, gameMap.length)] < distance[GraphMap.getCellNum(curY, curX, gameMap.length)]) {
-                    minDistY = curY+1;
-                    minDistX = curX;
+                if (gameMap[curY + 1][curX] == 0) {
+                    if (distance[GraphMap.getCellNum(curY + 1, curX, gameMap.length)] < distance[GraphMap.getCellNum(curY, curX, gameMap.length)]) {
+                        minDistY = curY + 1;
+                        minDistX = curX;
+                    }
                 }
-            }
-            if (gameMap[curY][curX-1] == 0) {
-                if (distance[GraphMap.getCellNum(curY, curX-1, gameMap.length)] < distance[GraphMap.getCellNum(curY, curX, gameMap.length)]) {
-                    minDistX = curX-1;
-                    minDistY = curY;
+                if (gameMap[curY][curX - 1] == 0) {
+                    if (distance[GraphMap.getCellNum(curY, curX - 1, gameMap.length)] < distance[GraphMap.getCellNum(curY, curX, gameMap.length)]) {
+                        minDistX = curX - 1;
+                        minDistY = curY;
+                    }
                 }
-            }
-            if (gameMap[curY][curX+1] == 0) {
-                if (distance[GraphMap.getCellNum(curY, curX+1, gameMap.length)] < distance[GraphMap.getCellNum(curY, curX, gameMap.length)]) {
-                    minDistX = curX+1;
-                    minDistY = curY;
+                if (gameMap[curY][curX + 1] == 0) {
+                    if (distance[GraphMap.getCellNum(curY, curX + 1, gameMap.length)] < distance[GraphMap.getCellNum(curY, curX, gameMap.length)]) {
+                        minDistX = curX + 1;
+                        minDistY = curY;
+                    }
+                }
+
+                if (gameMap[minDistY][minDistX] == 0) {
+                    this.setPos(minDistX, minDistY);
                 }
             }
 
-            if (gameMap[minDistY][minDistX] == 0) {
-                this.setPos(minDistX, minDistY);
-            }
+            else {
+                    if (gameMap[curY - 1][curX] == 0) {
+                        if (distance[GraphMap.getCellNum(curY - 1, curX, gameMap.length)] > distance[GraphMap.getCellNum(curY, curX, gameMap.length)]) {
+                            minDistX = curX;
+                            minDistY = curY - 1;
 
+                        }
+                    }
+                    if (gameMap[curY + 1][curX] == 0) {
+                        if (distance[GraphMap.getCellNum(curY + 1, curX, gameMap.length)] > distance[GraphMap.getCellNum(curY, curX, gameMap.length)]) {
+                            minDistY = curY + 1;
+                            minDistX = curX;
+                        }
+                    }
+                    if (gameMap[curY][curX - 1] == 0) {
+                        if (distance[GraphMap.getCellNum(curY, curX - 1, gameMap.length)] > distance[GraphMap.getCellNum(curY, curX, gameMap.length)]) {
+                            minDistX = curX - 1;
+                            minDistY = curY;
+                        }
+                    }
+                    if (gameMap[curY][curX + 1] == 0) {
+                        if (distance[GraphMap.getCellNum(curY, curX + 1, gameMap.length)] > distance[GraphMap.getCellNum(curY, curX, gameMap.length)]) {
+                            minDistX = curX + 1;
+                            minDistY = curY;
+                        }
+                    }
+
+                    if (gameMap[minDistY][minDistX] == 0) {
+                        this.setPos(minDistX, minDistY);
+                    }
+
+            }
+        lastStepTime = now;
     }
     }
-
 
     public void chaseSilly(List<List<Integer>> adj, Player player) {
-        if (!inCooldown) {
+        long now = System.currentTimeMillis();
+        if (!inCooldown && now-lastStepTime >= stepCooldown) {
             int nextCellInd = GraphMap.callDfsFromEnemy(adj, player, gameMap.length, this);
             if (nextCellInd > 0) {
                 int nextY = nextCellInd / gameMap.length;
                 int nextX = nextCellInd % gameMap.length;
                 setPos(nextX, nextY);
             }
+            lastStepTime = now;
         }
     }
 

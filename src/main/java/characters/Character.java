@@ -10,6 +10,9 @@ public class Character {
     // u d l r are directions
     char direction;
 
+    int stepCooldown = 300;
+    long lastStepTime = 0;
+
 
     public Character(int x, int y, int[][] gameMap) {
         this.x = x;

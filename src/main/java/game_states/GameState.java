@@ -1,4 +1,5 @@
 package game_states;
+import bonuses.Bonus;
 import buttons.MouseHover;
 import buttons.SetupButton;
 import characters.Enemy;
@@ -16,6 +17,7 @@ import java.awt.event.MouseAdapter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 
 public class GameState extends BaseState {
@@ -28,14 +30,17 @@ public class GameState extends BaseState {
     List<List<Integer>> adj;
     List<Integer> visited = new ArrayList<>();
     int score = 0;
-    int maxScore = 0;
     int lives = 3;
-    JLabel scoreLabel, livesLabel, timeLabel;
+    JLabel scoreLabel, livesLabel, timeLabel, bonusLabel;
     JPanel boardPanel = new JPanel();
     long startTime;
     JFrame window;
     long totalPauseTime = 0;
     long pauseStartTime;
+    List<Bonus> bonuses;
+
+    long bonusDropCooldown = 5000;
+    long lastBonusDropTime = System.currentTimeMillis();
 
 
     public GameState(PacmanGUI gui, int mapNumber, JFrame window) {
@@ -53,7 +58,6 @@ public class GameState extends BaseState {
         }
 
         initVisited();
-        countMaximumScore();
 
         int enemy1X = gameMap.length-2;
         int enemy1Y = gameMap.length-2;
@@ -74,9 +78,10 @@ public class GameState extends BaseState {
         enemies.add(enemy2);
         enemies.add(enemy3);
 
+        bonuses = new ArrayList<>();
 
 
-        scoreLabel = new JLabel("Score: " + score + "/" + maxScore);
+        scoreLabel = new JLabel("Score: " + score);
         scoreLabel.setFont(Constants.FONT_NORMAL);
         scoreLabel.setForeground(Constants.BUTTON_TEXT_COLOR);
 
@@ -88,6 +93,11 @@ public class GameState extends BaseState {
         timeLabel.setFont(Constants.FONT_NORMAL);
         timeLabel.setForeground(Constants.BUTTON_TEXT_COLOR);
 
+        bonusLabel = new JLabel("Bonus: None");
+        bonusLabel.setFont(Constants.FONT_NORMAL);
+        bonusLabel.setForeground(Constants.BUTTON_TEXT_COLOR);
+
+
         JPanel interfacePanel = new JPanel();
         interfacePanel.setBackground(Color.BLACK);
         interfacePanel.setForeground(Color.WHITE);
@@ -95,16 +105,15 @@ public class GameState extends BaseState {
         interfacePanel.add(scoreLabel, BorderLayout.NORTH);
         interfacePanel.add(livesLabel, BorderLayout.NORTH);
         interfacePanel.add(timeLabel, BorderLayout.NORTH);
+        interfacePanel.add(bonusLabel, BorderLayout.NORTH);
 
 
         JPanel interfaceWrapperPanel = new JPanel();
-        interfaceWrapperPanel.setPreferredSize(new Dimension(150,0));
+        interfaceWrapperPanel.setPreferredSize(new Dimension(250,0));
         interfaceWrapperPanel.setLayout(new BoxLayout(interfaceWrapperPanel, BoxLayout.Y_AXIS));
         interfaceWrapperPanel.setBackground(Color.BLACK);
         interfaceWrapperPanel.add(interfacePanel);
         interfaceWrapperPanel.add(livesLabel, BorderLayout.NORTH);
-
-
 
 
         add(interfaceWrapperPanel, BorderLayout.WEST);
@@ -127,6 +136,12 @@ public class GameState extends BaseState {
                 player.move();
                 enemiesHunt();
 
+                long now = System.currentTimeMillis();
+                if (now - lastBonusDropTime > bonusDropCooldown && bonuses.size() < 2) {
+                    dropBonus();
+                    lastBonusDropTime = now;
+                }
+
                 SwingUtilities.invokeLater(this::updateInterfaceLabels);
                 SwingUtilities.invokeLater(this::updateMap);
 
@@ -142,17 +157,28 @@ public class GameState extends BaseState {
 
     }
 
-    public void countMaximumScore() {
-        maxScore = 0;
-        for (int i = 0; i < gameMap.length; i++) {
-            for (int j = 0; j < gameMap.length; j++) {
-                if (gameMap[i][j] == 0) {
-                    maxScore++;
-                }
-            }
-        }
 
+    public void dropBonus() {
+        Enemy responsible = enemies.get(new Random().nextInt(enemies.toArray().length));
+        Bonus.BonusType bonus = Bonus.BonusType.values()[new Random().nextInt(Bonus.BonusType.values().length)];
+        bonuses.add(new Bonus(bonus, responsible.getX(), responsible.getY()));
     }
+
+    public void utilizeBonus(Bonus bonus) {
+        if (bonus.getType() == Bonus.BonusType.SPEED_BOOSTER) {
+            player.bonusSpeed();
+        }
+        else if (bonus.getType() == Bonus.BonusType.IMMORTALITY) {
+            player.bonusImmortality();
+        }
+        else if (bonus.getType() == Bonus.BonusType.HUNTER) {
+            player.bonusHunter();
+        }
+        else if (bonus.getType() == Bonus.BonusType.DOUBLE_SCORE) {
+            player.bonusDoubleScore();
+        }
+    }
+
 
     public int playTime() {
         long timePlayed = System.currentTimeMillis() - startTime - totalPauseTime;
@@ -180,10 +206,7 @@ public class GameState extends BaseState {
                 gameIsOn = true;
             }
         }
-
-
     }
-
 
     public void initVisited() {
         for (int i = 0; i < gameMap.length; i++) {
@@ -193,11 +216,11 @@ public class GameState extends BaseState {
         }
     }
 
-
     public void updateInterfaceLabels() {
-        scoreLabel.setText("Score: " + score + "/" + maxScore);
+        scoreLabel.setText("Score: " + player.getScore());
         livesLabel.setText("HP: " + lives);
         timeLabel.setText("Time: " + playTime());
+        bonusLabel.setText("Bonus: " + player.currentBonus());
     }
 
 
@@ -227,20 +250,37 @@ public class GameState extends BaseState {
                 }
 
                 if (player.getX() == j && player.getY() == i) {
-
                     tile.removeAll();
                     tile.setBackground(Color.ORANGE);
                     if (visited.get(GraphMap.getCellNum(i, j, gameMap.length)) == 0) {
-                        score++;
+                        player.increaseScore();
                         visited.set(GraphMap.getCellNum(i, j, gameMap.length), 1);
                     }
                 }
+
+                // Bonuses handling
+                Bonus taken = null;
+                for (Bonus bonus: bonuses) {
+                    if (bonus.getX() == j && bonus.getY() == i) {
+                        if (bonus.getType() == Bonus.BonusType.SPEED_BOOSTER) tile.setBackground(Color.GREEN);
+                        else if (bonus.getType() == Bonus.BonusType.IMMORTALITY) tile.setBackground(Color.MAGENTA);
+                        else if (bonus.getType() == Bonus.BonusType.HUNTER) {tile.setBackground(Color.cyan);}
+                        else tile.setBackground(Color.pink);
+                    }
+                    if (bonus.getX() == player.getX() && bonus.getY() == player.getY()) {
+                        utilizeBonus(bonus);
+                        taken = bonus;
+                    }
+                }
+                if (taken != null) bonuses.remove(taken);
+
 
                 for (Enemy e : enemies) {
                     if (e.getX() == j && e.getY() == i) {
                         tile.setBackground(Color.RED);
                     }
                 }
+
                 c.gridx = j;
                 c.gridy = i;
 
@@ -254,11 +294,13 @@ public class GameState extends BaseState {
 
 
     public void enemiesHunt() {
+
+        Enemy beaten = null;
         for (Enemy enemy : enemies) {
             if (enemy.isSmart()) enemy.chaseOptimally(adj, player);
             else enemy.chaseSilly(adj, player);
             if (enemy.getX() == player.getX() && enemy.getY() == player.getY()) {
-                if (!enemy.getInCooldown()) {
+                if (!enemy.getInCooldown() && player.canTakeDamage() && !player.isHunting()) {
                     lives -= 1;
                     if (lives <= 0) {
                         lost = true;
@@ -266,9 +308,16 @@ public class GameState extends BaseState {
                     }
                     enemy.cooldown();
                 }
+
+                else if (player.isHunting() && !enemy.getInCooldown()) {
+                    beaten = enemy;
+
+                }
             }
 
-        }}
+        }
+        if (beaten != null) enemies.remove(beaten);
+    }
 
     public void gameOver() {
         gameIsOn = false;
@@ -282,7 +331,7 @@ public class GameState extends BaseState {
         gameOverLabel.setFont(Constants.FONT_LARGE);
         gameOverLabel.setHorizontalAlignment(SwingConstants.CENTER);
 //        this.add(new JLabel(String.valueOf(this.score)));
-        JLabel scoreLabel = new JLabel("Your score: " + score);
+        JLabel scoreLabel = new JLabel("Your score: " + player.getScore());
         scoreLabel.setForeground(Constants.BUTTON_TEXT_COLOR);
         scoreLabel.setFont(Constants.FONT_NORMAL);
 
@@ -293,11 +342,11 @@ public class GameState extends BaseState {
 
         JTextField enterNamePane = new JTextField();
         enterNamePane.setEditable(true);
-        enterNamePane.setBackground(Color.BLACK);
         enterNamePane.setBorder(BorderFactory.createLineBorder(Constants.POINT_COLOR,2, true));
         enterNamePane.setMaximumSize(new Dimension(200,30));
         enterNamePane.setFont(Constants.FONT_NORMAL);
         enterNamePane.setForeground(Constants.POINT_COLOR);
+        enterNamePane.setBackground(Color.BLACK);
 
 
 
@@ -308,7 +357,7 @@ public class GameState extends BaseState {
             String nickname = enterNamePane.getText().trim();
             if (!nickname.isEmpty()) {
                 try {
-                    Tools.saveScore(new Score(score, nickname, playTime(), !lost, gameMap.length));
+                    Tools.saveScore(new Score(player.getScore(), nickname, playTime(), !lost, gameMap.length));
                     gui.changeState(new MainMenuState(gui));
                     window.dispose();
                 } catch (IOException ex) {
