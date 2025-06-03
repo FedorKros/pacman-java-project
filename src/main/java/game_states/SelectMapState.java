@@ -31,7 +31,7 @@ public class SelectMapState extends BaseState {
         buttonsPanel = new JPanel();
 
         buttonsPanel.setLayout(new FlowLayout(FlowLayout.CENTER, Constants.MAP_BUTTON_HMARGIN,100));
-        buttonsPanel.setBackground(Color.BLACK);
+        buttonsPanel.setOpaque(false);
 
         smallMap = SetupButton.setupMapButton("Bitvoid",this);
         medMap = SetupButton.setupMapButton("Neon Sprawl",this);

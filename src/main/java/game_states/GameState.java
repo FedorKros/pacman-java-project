@@ -26,7 +26,7 @@ public class GameState extends BaseState {
     boolean lost = false;
     ArrayList<Enemy> enemies;
     List<List<Integer>> adj;
-    List<Integer> visited = new ArrayList<Integer>();
+    List<Integer> visited = new ArrayList<>();
     int score = 0;
     int maxScore = 0;
     int lives = 3;
@@ -34,6 +34,9 @@ public class GameState extends BaseState {
     JPanel boardPanel = new JPanel();
     long startTime;
     JFrame window;
+    long totalPauseTime = 0;
+    long pauseStartTime;
+
 
     public GameState(PacmanGUI gui, int mapNumber, JFrame window) {
         super(gui);
@@ -112,23 +115,22 @@ public class GameState extends BaseState {
         updateMap();
 
         Thread gameLoop = new Thread(() -> {
-                while (true) {
-                    try {
-                        Thread.sleep(Constants.GAME_FRAME_LENGTH);
-                    } catch (InterruptedException e) {
-                        throw new RuntimeException(e);
-                    }
-
-                    if (!gameIsOn) continue;
-
-                    player.move();
-                    enemiesHunt();
-
-                    SwingUtilities.invokeLater(this::updateInterfaceLabels);
-                    SwingUtilities.invokeLater(this::updateMap);
-
-
+            while (true) {
+                try {
+                    Thread.sleep(Constants.GAME_FRAME_LENGTH);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
                 }
+
+                if (!gameIsOn) continue;
+
+                player.move();
+                enemiesHunt();
+
+                SwingUtilities.invokeLater(this::updateInterfaceLabels);
+                SwingUtilities.invokeLater(this::updateMap);
+
+            }
         });
 
         gameLoop.start();
@@ -153,9 +155,8 @@ public class GameState extends BaseState {
     }
 
     public int playTime() {
-        long timePlayed = System.currentTimeMillis() - startTime;
+        long timePlayed = System.currentTimeMillis() - startTime - totalPauseTime;
         return (int)(timePlayed/1000);
-
     }
 
     @Override
@@ -170,15 +171,19 @@ public class GameState extends BaseState {
         player.setDirection(direction);
 
         if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
-            gameIsOn = !gameIsOn;
-//            SwingUtilities.getWindowAncestor(this).dispose();
+            if (gameIsOn) {
+                pauseStartTime = System.currentTimeMillis();
+                gameIsOn = false;
+            }
+            else {
+                totalPauseTime += Math.max(System.currentTimeMillis() - pauseStartTime, 0);
+                gameIsOn = true;
+            }
         }
 
 
     }
 
-
-//    public void
 
     public void initVisited() {
         for (int i = 0; i < gameMap.length; i++) {
@@ -247,22 +252,23 @@ public class GameState extends BaseState {
 
     }
 
+
     public void enemiesHunt() {
         for (Enemy enemy : enemies) {
             if (enemy.isSmart()) enemy.chaseOptimally(adj, player);
             else enemy.chaseSilly(adj, player);
-        if (enemy.getX() == player.getX() && enemy.getY() == player.getY()) {
-            if (!enemy.getInCooldown()) {
-                lives -= 1;
-                if (lives <= 0) {
-                    lost = true;
-                    gameOver();
+            if (enemy.getX() == player.getX() && enemy.getY() == player.getY()) {
+                if (!enemy.getInCooldown()) {
+                    lives -= 1;
+                    if (lives <= 0) {
+                        lost = true;
+                        gameOver();
+                    }
+                    enemy.cooldown();
                 }
-                enemy.cooldown();
             }
-        }
 
-    }}
+        }}
 
     public void gameOver() {
         gameIsOn = false;
@@ -311,7 +317,6 @@ public class GameState extends BaseState {
             }
         });
 
-
         this.add(Box.createVerticalGlue());
         this.add(gameOverLabel); add(Box.createRigidArea(Constants.MENU_BUTTON_VMARGIN));
         this.add(scoreLabel); add(Box.createRigidArea(Constants.MENU_BUTTON_VMARGIN));
@@ -320,20 +325,14 @@ public class GameState extends BaseState {
         this.add(submitButton); add(Box.createRigidArea(Constants.MENU_BUTTON_VMARGIN));
         this.add(Box.createVerticalGlue());
 
-
-
-
+        enterNamePane.requestFocus();
 
         for (Component c: getComponents()) {
             if (c instanceof JComponent) {
                 ((JComponent) c).setAlignmentX(Component.CENTER_ALIGNMENT);
             }
         }
-
-
         revalidate();
         repaint();
     }
-
-
 }

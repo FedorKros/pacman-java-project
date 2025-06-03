@@ -17,8 +17,9 @@ public class ScoreComponent extends JPanel {
 
 
         this.setLayout(new GridLayout(1,5,10,0));
-        this.setBackground(Color.BLACK);
-        this.setBorder(BorderFactory.createLineBorder(Color.GRAY,1,true));
+//        this.setBackground(Color.BLACK);
+        this.setBorder(BorderFactory.createLineBorder(Color.GRAY,1));
+        this.setOpaque(false);
 
         add(scoreLabel);
         add(nicknameLabel);

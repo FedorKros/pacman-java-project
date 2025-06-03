@@ -20,8 +20,8 @@ public class MainMenuState extends BaseState {
 
     @Override
     public void setupUI() {
-
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+
 
         titleLabel.setText("CyberPacMan");
 
@@ -35,6 +35,7 @@ public class MainMenuState extends BaseState {
         scoresButton.addMouseListener(new MouseHover());
         quitButton.addMouseListener(new MouseHover());
 
+
         add(Box.createVerticalGlue());
         add(titleLabel); add(Box.createRigidArea(Constants.MENU_TITLE_VMARGIN));
         add(playButton); add(Box.createRigidArea(Constants.MENU_BUTTON_VMARGIN));
@@ -47,6 +48,7 @@ public class MainMenuState extends BaseState {
             }
         }
     }
+
 
 
     @Override
@@ -64,6 +66,7 @@ public class MainMenuState extends BaseState {
             System.exit(0);
         }
     }
+
 
 
 

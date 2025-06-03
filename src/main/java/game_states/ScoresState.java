@@ -8,6 +8,8 @@ import scores.Score;
 import scores.ScoreComponent;
 
 import javax.swing.*;
+import javax.swing.border.Border;
+import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
@@ -40,8 +42,10 @@ public class ScoresState extends BaseState {
         scores = Tools.loadScores();
 
         scorePanel = new JPanel();
-        scorePanel.setBackground(Color.BLACK);
+//        scorePanel.setBackground(Color.BLACK);
         scorePanel.setLayout(new BoxLayout(scorePanel, BoxLayout.Y_AXIS));
+
+
 
         menuButton = SetupButton.setupButton("Menu", this);
         buttonPanel = new JPanel();
@@ -65,13 +69,22 @@ public class ScoresState extends BaseState {
         JScrollBar verticalScrollBar = scrollPane.getVerticalScrollBar();
         verticalScrollBar.setUnitIncrement(20);
 
-        scrollPanel.setBackground(Color.BLACK);
+        scrollPane.getVerticalScrollBar().setOpaque(false);
+        scrollPane.setBorder(new LineBorder(Color.WHITE, 2));
+        scrollPane.getViewport().setOpaque(false);
+        scrollPane.setOpaque(false);
+        scorePanel.setOpaque(false);
+        scrollPanel.setOpaque(false);
+
+
         scrollPanel.add(scrollPane);
 
         menuButton.setHorizontalAlignment(SwingConstants.CENTER);
         menuButton.addMouseListener(new MouseHover());
-        buttonPanel.setBackground(Color.BLACK);
+//        buttonPanel.setBackground(Color.BLACK);
         buttonPanel.add(menuButton);
+        buttonPanel.setOpaque(false);
+
 
         add(scrollPanel, BorderLayout.CENTER);
         add(buttonPanel, BorderLayout.SOUTH);

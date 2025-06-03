@@ -45,6 +45,10 @@ public abstract class BaseState extends JPanel implements ActionListener, KeyLis
     @Override
     public void keyTyped(KeyEvent e) {}
 
-    public void tick() {}
+    @Override
+    public void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        g.drawImage(new ImageIcon("assets/images/background1.png").getImage(), 0, 0, null);
+    }
 
 }
