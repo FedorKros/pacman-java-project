@@ -84,8 +84,8 @@ public class SelectMapState extends BaseState {
             case 3 -> windowName = " [Cyberspace]";
         }
 
-        GameState gamePanel = new GameState(gui, mapNumber);
         JFrame gameMapWindow = new JFrame("CyberPacMan" + windowName);
+        GameState gamePanel = new GameState(gui, mapNumber, gameMapWindow);
         gameMapWindow.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         gameMapWindow.setSize(Constants.WINDOW_SIZE.height, Constants.WINDOW_SIZE.height);
         gameMapWindow.setLocationRelativeTo(null);

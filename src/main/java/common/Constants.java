@@ -125,8 +125,8 @@ public class Constants {
     public static final Dimension POINT_SIZE = new Dimension(4,4);
     public static final Color POINT_COLOR = new Color(225,225,225);
 
-//    public static final int GAME_FRAME_LENGTH = 350;
-    public static final int GAME_FRAME_LENGTH = 100;
+    public static final int GAME_FRAME_LENGTH = 350;
+//    public static final int GAME_FRAME_LENGTH = 100;
     }
 
 

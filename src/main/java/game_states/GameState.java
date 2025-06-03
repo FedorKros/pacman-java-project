@@ -33,10 +33,11 @@ public class GameState extends BaseState {
     JLabel scoreLabel, livesLabel, timeLabel;
     JPanel boardPanel = new JPanel();
     long startTime;
+    JFrame window;
 
-
-    public GameState(PacmanGUI gui, int mapNumber) {
+    public GameState(PacmanGUI gui, int mapNumber, JFrame window) {
         super(gui);
+        this.window = window;
         setLayout(new BorderLayout());
 
         startTime = System.currentTimeMillis();
@@ -111,12 +112,14 @@ public class GameState extends BaseState {
         updateMap();
 
         Thread gameLoop = new Thread(() -> {
-                while (gameIsOn) {
+                while (true) {
                     try {
                         Thread.sleep(Constants.GAME_FRAME_LENGTH);
                     } catch (InterruptedException e) {
                         throw new RuntimeException(e);
                     }
+
+                    if (!gameIsOn) continue;
 
                     player.move();
                     enemiesHunt();
@@ -167,7 +170,7 @@ public class GameState extends BaseState {
         player.setDirection(direction);
 
         if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
-            gameIsOn = false;
+            gameIsOn = !gameIsOn;
 //            SwingUtilities.getWindowAncestor(this).dispose();
         }
 
@@ -250,7 +253,7 @@ public class GameState extends BaseState {
             else enemy.chaseSilly(adj, player);
         if (enemy.getX() == player.getX() && enemy.getY() == player.getY()) {
             if (!enemy.getInCooldown()) {
-                lives -= 3;
+                lives -= 1;
                 if (lives <= 0) {
                     lost = true;
                     gameOver();
@@ -300,6 +303,8 @@ public class GameState extends BaseState {
             if (!nickname.isEmpty()) {
                 try {
                     Tools.saveScore(new Score(score, nickname, playTime(), !lost, gameMap.length));
+                    gui.changeState(new MainMenuState(gui));
+                    window.dispose();
                 } catch (IOException ex) {
                     throw new RuntimeException(ex);
                 }
