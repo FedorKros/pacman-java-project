@@ -15,7 +15,7 @@ public class ScoreComponent extends JPanel {
         nicknameLabel = new JLabel(nickname);
         timeLabel = new JLabel(String.valueOf(playTime));
         wonLabel = new JLabel(String.valueOf(won));
-        mapLabel = new JLabel("Map size: " + mapSize);
+        mapLabel = new JLabel("Map: " + mapSize);
 
 
         this.setLayout(new GridLayout(1,5,10,0));

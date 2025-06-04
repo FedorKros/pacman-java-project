@@ -1,18 +1,19 @@
 package characters;
 
-import common.Constants;
-
-import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 
 public class Character {
     int x, y;
     int[][] gameMap;
-    // u d l r are directions
-    char direction;
 
+    char direction;
     int stepCooldown = 300;
     long lastStepTime = 0;
 
+    BufferedImage[] animationImages;
+    int currentImage = 0;
+    int imageDuration = 200;
 
     public Character(int x, int y, int[][] gameMap) {
         this.x = x;
@@ -28,10 +29,6 @@ public class Character {
         return y;
     }
 
-    public void draw(Graphics g) {
-        g.setColor(Color.RED);
-        g.fillRect(x* Constants.TILE_SIZE, y* Constants.TILE_SIZE, Constants.TILE_SIZE, Constants.TILE_SIZE);
-    }
 
     public void setPos(int x, int y) {
         this.x = x;
@@ -39,14 +36,22 @@ public class Character {
     }
 
     public void move() {
-
     }
 
-    public void moveBy(int horizontalSpeed, int verticalSpeed) {
-        int nextX = this.x+horizontalSpeed;
-        int nextY = this.y+verticalSpeed;
-        if (gameMap[nextY][nextX] != 1) {
-            setPos(nextX, nextY);
-        }
+    protected void loadImages() throws IOException {}
+
+    public void launchAnimationThread() {
+
+        new Thread(() -> {
+            while (true) {
+                try {
+                    Thread.sleep(imageDuration);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                if (animationImages != null) {}
+                currentImage = (currentImage + 1) % animationImages.length;
+            }
+        }).start();
     }
 }

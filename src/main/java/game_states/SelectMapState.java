@@ -61,16 +61,12 @@ public class SelectMapState extends BaseState {
 
         if (e.getSource() == smallMap) {
             createGameWindow(gui, 1);
-            System.out.println("Small Map");
-
         }
         if (e.getSource() == medMap) {
             createGameWindow(gui, 2);
-            System.out.println("Medium Map");
         }
         if (e.getSource() == bigMap) {
             createGameWindow(gui, 3);
-            System.out.println("Big Map");
         }
     }
 
@@ -84,7 +80,7 @@ public class SelectMapState extends BaseState {
             case 3 -> windowName = " [Cyberspace]";
         }
 
-        JFrame gameMapWindow = new JFrame("CyberPacMan" + windowName);
+        JFrame gameMapWindow = new JFrame("Pan PacMan" + windowName);
         GameState gamePanel = new GameState(gui, mapNumber, gameMapWindow);
         gameMapWindow.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         gameMapWindow.setSize(Constants.WINDOW_SIZE.height, Constants.WINDOW_SIZE.height);

@@ -8,8 +8,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.Stack;
 
-import static common.Constants.FRAME_LENGTH;
-
 public class PacmanGUI extends JFrame  {
     private Stack<BaseState> stateStack;
     private float time = 0.0f;
@@ -40,7 +38,7 @@ public class PacmanGUI extends JFrame  {
         new Thread(() -> {
             while (true) {
                 try {
-                    Thread.sleep(FRAME_LENGTH);
+                    Thread.sleep(Constants.GAME_FRAME_LENGTH);
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
                 }
@@ -52,8 +50,6 @@ public class PacmanGUI extends JFrame  {
             }
         }).start();
     }
-
-
 
 
     public void changeState(BaseState newState) {

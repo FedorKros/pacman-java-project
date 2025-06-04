@@ -10,11 +10,9 @@ import game_logic.PacmanGUI;
 import map_navigation.GraphMap;
 import scores.Score;
 
-import javax.management.remote.rmi.RMIConnectionImpl;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
-import java.awt.event.MouseAdapter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,6 +28,7 @@ public class GameState extends BaseState {
     ArrayList<Enemy> enemies;
     List<List<Integer>> adj;
     List<Integer> visited = new ArrayList<>();
+    int totalMapPoints = 0;
     int score = 0;
     int lives = 3;
     JLabel scoreLabel, livesLabel, timeLabel, bonusLabel;
@@ -139,12 +138,18 @@ public class GameState extends BaseState {
 
                 long now = System.currentTimeMillis();
                 if (now - lastBonusDropTime > bonusDropCooldown && bonuses.size() < 2) {
-                    dropBonus();
+                    if (new Random().nextDouble() < Constants.BONUS_DROP_PROBABILITY) {
+                        dropBonus();
+                    }
                     lastBonusDropTime = now;
                 }
 
                 SwingUtilities.invokeLater(this::updateInterfaceLabels);
                 SwingUtilities.invokeLater(this::updateMap);
+
+                if (totalMapPoints <= 0) {
+                    gameOver();
+                }
 
             }
         });
@@ -158,24 +163,23 @@ public class GameState extends BaseState {
 
     }
 
-
     public void dropBonus() {
-        Enemy responsible = enemies.get(new Random().nextInt(enemies.toArray().length));
+        Enemy responsible = enemies.get(new Random().nextInt(enemies.size()));
         Bonus.BonusType bonus = Bonus.BonusType.values()[new Random().nextInt(Bonus.BonusType.values().length)];
         bonuses.add(new Bonus(bonus, responsible.getX(), responsible.getY()));
     }
 
     public void utilizeBonus(Bonus bonus) {
-        if (bonus.getType() == Bonus.BonusType.SPEED_BOOSTER) {
+        if (bonus.type() == Bonus.BonusType.SPEED_BOOSTER) {
             player.bonusSpeed();
         }
-        else if (bonus.getType() == Bonus.BonusType.IMMORTALITY) {
+        else if (bonus.type() == Bonus.BonusType.IMMORTALITY) {
             player.bonusImmortality();
         }
-        else if (bonus.getType() == Bonus.BonusType.HUNTER) {
+        else if (bonus.type() == Bonus.BonusType.HUNTER) {
             player.bonusHunter();
         }
-        else if (bonus.getType() == Bonus.BonusType.DOUBLE_SCORE) {
+        else if (bonus.type() == Bonus.BonusType.DOUBLE_SCORE) {
             player.bonusDoubleScore();
         }
     }
@@ -217,6 +221,7 @@ public class GameState extends BaseState {
         for (int i = 0; i < gameMap.length; i++) {
             for (int j = 0; j < gameMap.length; j++) {
                 visited.add(0);
+                if (gameMap[i][j] == 0) totalMapPoints++;
             }
         }
     }
@@ -256,11 +261,11 @@ public class GameState extends BaseState {
 
                 if (player.getX() == j && player.getY() == i) {
                     tile.removeAll();
-//                    tile.setBackground(Color.ORANGE);
                     JLabel pacman = new JLabel(new ImageIcon(player.getAnimationImage()));
                     tile.add(pacman);
                     if (visited.get(GraphMap.getCellNum(i, j, gameMap.length)) == 0) {
                         player.increaseScore();
+                        totalMapPoints--;
                         visited.set(GraphMap.getCellNum(i, j, gameMap.length), 1);
                     }
                 }
@@ -268,13 +273,13 @@ public class GameState extends BaseState {
                 // Bonuses handling
                 Bonus taken = null;
                 for (Bonus bonus: bonuses) {
-                    if (bonus.getX() == j && bonus.getY() == i) {
-                        if (bonus.getType() == Bonus.BonusType.SPEED_BOOSTER) tile.setBackground(Color.GREEN);
-                        else if (bonus.getType() == Bonus.BonusType.IMMORTALITY) tile.setBackground(Color.MAGENTA);
-                        else if (bonus.getType() == Bonus.BonusType.HUNTER) {tile.setBackground(Color.cyan);}
+                    if (bonus.x() == j && bonus.y() == i) {
+                        if (bonus.type() == Bonus.BonusType.SPEED_BOOSTER) tile.setBackground(Color.GREEN);
+                        else if (bonus.type() == Bonus.BonusType.IMMORTALITY) tile.setBackground(Color.MAGENTA);
+                        else if (bonus.type() == Bonus.BonusType.HUNTER) {tile.setBackground(Color.cyan);}
                         else tile.setBackground(Color.pink);
                     }
-                    if (bonus.getX() == player.getX() && bonus.getY() == player.getY()) {
+                    if (bonus.x() == player.getX() && bonus.y() == player.getY()) {
                         utilizeBonus(bonus);
                         taken = bonus;
                     }

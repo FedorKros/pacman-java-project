@@ -1,11 +1,11 @@
 package characters;
 
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.util.List;
-import java.util.Queue;
 import map_navigation.GraphMap;
 
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
 import javax.imageio.ImageIO;
 
 public class Enemy extends Character {
@@ -14,9 +14,6 @@ public class Enemy extends Character {
     boolean inCooldown = false;
     boolean smart;
 
-    BufferedImage[] animationImages;
-    int currentImage = 0;
-    int imageDuration = 200;
     char prevDirection = '0';
     String name;
 
@@ -53,15 +50,15 @@ public class Enemy extends Character {
     }
 
 
-
-    public void loadImages() throws Exception {
+    @Override
+    protected void loadImages() throws IOException {
         try {
             if (direction != 'r' && direction != 'l' && direction != 'u' && direction != 'd') direction = 'r';
             animationImages = new BufferedImage[] {
                     ImageIO.read(new File("assets/animations/enemies/" + name + "/" + direction + "/p1.png")),
                     ImageIO.read(new File("assets/animations/enemies/" + name + "/" + direction + "/p2.png"))
             };
-        } catch (Exception e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
 
@@ -70,23 +67,6 @@ public class Enemy extends Character {
 
     public BufferedImage getAnimationImage() {
         return animationImages[currentImage];
-    }
-
-
-    public void launchAnimationThread() {
-
-        new Thread(() -> {
-            while (true) {
-                try {
-                    Thread.sleep(imageDuration);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-
-                if (animationImages != null) {}
-                currentImage = (currentImage + 1) % animationImages.length;
-            }
-        }).start();
     }
 
     public void cooldown() {

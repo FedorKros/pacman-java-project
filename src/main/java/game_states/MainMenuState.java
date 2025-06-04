@@ -23,7 +23,7 @@ public class MainMenuState extends BaseState {
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
 
-        titleLabel.setText("CyberPacMan");
+        titleLabel.setText("Pan Pacman");
 
         playButton = SetupButton.setupButton("New Game", this);
         scoresButton = SetupButton.setupButton("Highest Scores", this);

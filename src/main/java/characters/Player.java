@@ -25,11 +25,6 @@ public class Player extends Character {
     boolean isHunting = false;
     double scoreMultiplier = 1;
 
-    // animation fields
-    BufferedImage[] animationImages;
-    int currentImage = 0;
-    int imageDuration = 200;
-
 
     public Player(int x, int y, int[][] gameMap) {
         super(x, y, gameMap);
@@ -37,56 +32,30 @@ public class Player extends Character {
 
         try {
             loadImages();
+            launchAnimationThread();
         } catch (IOException e) {
             throw new RuntimeException("Failed to load pacman animation images!" + e);
         }
-
-
-        new Thread(() -> {
-            while (true) {
-                try {
-                    Thread.sleep(imageDuration);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-
-                currentImage = (currentImage + 1) % animationImages.length;
-            }
-        }).start();
-
-
     }
 
-    private void loadImages() throws IOException {
-
+    @Override
+    protected void loadImages() throws IOException {
         if (direction == '0') direction = 'r';
-            try {
-                animationImages = new BufferedImage[]{
-                        ImageIO.read(new File("assets/animations/pacman/" + direction + "/p1.png")),
-                        ImageIO.read(new File("assets/animations/pacman/" + direction + "/p2.png")),
-                        ImageIO.read(new File("assets/animations/pacman/" + direction + "/p3.png")),
-                        ImageIO.read(new File("assets/animations/pacman/" + direction + "/p4.png"))
-                };
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-
+        try {
+            animationImages = new BufferedImage[]{
+                    ImageIO.read(new File("assets/animations/pacman/" + direction + "/p1.png")),
+                    ImageIO.read(new File("assets/animations/pacman/" + direction + "/p2.png")),
+                    ImageIO.read(new File("assets/animations/pacman/" + direction + "/p3.png")),
+                    ImageIO.read(new File("assets/animations/pacman/" + direction + "/p4.png"))
+            };
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
-
 
     public BufferedImage getAnimationImage() {
         return animationImages[currentImage];
     }
-
-
-
-    @Override
-    public void draw(Graphics g) {
-        g.setColor(Color.GREEN);
-        g.fillRect(x* Constants.TILE_SIZE, y* Constants.TILE_SIZE, Constants.TILE_SIZE, Constants.TILE_SIZE);
-    }
-
 
     public int getScore() {
         return score;
@@ -121,7 +90,6 @@ public class Player extends Character {
             }
             lastStepTime = now;
         }
-
         if (now >= bonusTimeEnd) {
             stopBonusEffect();
         }
@@ -132,19 +100,15 @@ public class Player extends Character {
         switch (d) {
             case 'u' -> {
                 if (gameMap[y-1][x] == 0) direction = d;
-
             }
             case 'd' -> {
                 if (gameMap[y+1][x] == 0) direction = d;
-
             }
             case 'l' -> {
                 if (gameMap[y][x-1] == 0) direction = d;
-
             }
             case 'r' -> {
                 if (gameMap[y][x+1] == 0) direction = d;
-
             }
         }
         char dirAfter = direction;
