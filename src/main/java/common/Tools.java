@@ -6,6 +6,7 @@ import java.awt.*;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 
 
 public class Tools {
@@ -20,7 +21,8 @@ public class Tools {
     public static void saveScore(Score score) throws IOException {
         ArrayList<Score> scoreList = loadScores();
         scoreList.add(score);
-        Collections.sort(scoreList);
+
+
 
         try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(SAVE_FILE_PATH))) {
             out.writeObject(scoreList);
@@ -32,11 +34,12 @@ public class Tools {
     public static ArrayList<Score> loadScores() throws IOException {
         FileInputStream saveFile = new FileInputStream(SAVE_FILE_PATH);
         try (ObjectInputStream out = new ObjectInputStream(saveFile)) {
-            return (ArrayList<Score>) out.readObject();
+            ArrayList<Score> loaded = (ArrayList<Score>) out.readObject();
+            Collections.sort(loaded);
+            return loaded;
         } catch (IOException | ClassNotFoundException e) {
             System.out.println(e.getMessage());
         }
-
         return new ArrayList<>();
     }
 

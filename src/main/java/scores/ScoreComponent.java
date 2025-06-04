@@ -8,6 +8,8 @@ import java.awt.*;
 public class ScoreComponent extends JPanel {
     public JLabel scoreLabel, nicknameLabel, timeLabel, wonLabel, mapLabel;
 
+
+
     public ScoreComponent(int score, String nickname, int playTime, boolean won, int mapSize) {
         scoreLabel = new JLabel(String.valueOf(score));
         nicknameLabel = new JLabel(nickname);

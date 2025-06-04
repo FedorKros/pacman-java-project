@@ -233,11 +233,7 @@ public class Enemy extends Character {
                         throw new RuntimeException(e);
                     }
                 }
-
-
                 setPos(nextX, nextY);
-
-
             }
             lastStepTime = now;
         }

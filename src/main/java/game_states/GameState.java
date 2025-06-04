@@ -73,7 +73,7 @@ public class GameState extends BaseState {
         player = new Player(1,1, gameMap);
         enemy1 = new Enemy(enemy1X,enemy1Y, gameMap, player, "blue", true);
         enemy2 = new Enemy(enemy2X, enemy2Y, gameMap, player, "red");
-        enemy3 = new Enemy(enemy3X, enemy3Y, gameMap, player, "pink");
+        enemy3 = new Enemy(enemy3X, enemy3Y, gameMap, player, "orange");
         enemies = new ArrayList<>();
         enemies.add(enemy1);
         enemies.add(enemy2);
@@ -354,7 +354,8 @@ public class GameState extends BaseState {
         enterNamePane.setBorder(BorderFactory.createLineBorder(Constants.POINT_COLOR,2, true));
         enterNamePane.setMaximumSize(new Dimension(200,30));
         enterNamePane.setFont(Constants.FONT_NORMAL);
-        enterNamePane.setForeground(Constants.POINT_COLOR);
+        enterNamePane.setForeground(Constants.BUTTON_TEXT_COLOR);
+        enterNamePane.setBackground(Color.BLACK);
 
 
         JButton submitButton = SetupButton.setupButton("Record score", this);
