@@ -11,7 +11,7 @@ import java.awt.event.*;
 import java.io.IOException;
 
 public class MainMenuState extends BaseState {
-    JButton playButton, scoresButton, quitButton;
+    private JButton playButton, scoresButton, quitButton;
 
     public MainMenuState(PacmanGUI gui) {
         super(gui);

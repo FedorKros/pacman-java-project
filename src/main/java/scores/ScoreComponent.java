@@ -24,13 +24,14 @@ public class ScoreComponent extends JPanel {
         nicknameLabel = new JLabel(nickname);
         timeLabel = new JLabel(String.valueOf(playTime));
         wonLabel = new JLabel("Lost");
-        if (won) wonLabel.setText("WON");
+        if (won) wonLabel.setText("Won");
         mapLabel = new JLabel(mapMap.get(mapSize));
 
         this.setLayout(new GridLayout(1,5,10,0));
         this.setBorder(BorderFactory.createLineBorder(Color.GRAY,1));
         this.setOpaque(false);
         this.setMaximumSize(Constants.SCORE_COMPONENT_SIZE);
+        this.setPreferredSize(Constants.SCORE_COMPONENT_SIZE);
 
         add(scoreLabel);
         add(nicknameLabel);

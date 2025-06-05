@@ -10,12 +10,12 @@ import javax.imageio.ImageIO;
 
 public class Enemy extends Character {
     Player target;
-    static int cooldownTimeMs = 4000;
-    boolean inCooldown = false;
-    boolean smart;
+    private static final int cooldownTimeMs = 4000;
+    private boolean inCooldown = false;
+    private final boolean smart;
 
-    char prevDirection = '0';
-    String name;
+    private char prevDirection = '0';
+    private final String name;
 
 
     public Enemy(int x, int y, int[][] gameMap, Player target, String name) {
@@ -104,7 +104,7 @@ public class Enemy extends Character {
             int minDistX = curX;
             int minDistY = curY;
 
-            if (!player.isHunting) {
+            if (!player.isHunting()) {
                 if (gameMap[curY - 1][curX] == 0) {
                     if (distance[GraphMap.getCellNum(curY - 1, curX, gameMap.length)] < distance[GraphMap.getCellNum(curY, curX, gameMap.length)]) {
                         minDistX = curX;

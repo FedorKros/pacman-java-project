@@ -14,8 +14,8 @@ import java.awt.event.WindowEvent;
 
 public class SelectMapState extends BaseState {
 
-    JButton smallMap, medMap, bigMap;
-    JPanel buttonsPanel;
+    private JButton smallMap, medMap, bigMap;
+    private JPanel buttonsPanel;
 
     public SelectMapState(PacmanGUI gui) {
         super(gui);

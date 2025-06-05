@@ -17,9 +17,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 public class ScoresState extends BaseState {
-    JPanel scorePanel, legendPanel, topPanel, buttonPanel, scrollPanel;
-    ArrayList<Score> scores;
-    JButton menuButton;
+    private JPanel scorePanel, legendPanel, topPanel, buttonPanel, scrollPanel;
+    private ArrayList<Score> scores;
+    private JButton menuButton;
 
     public ScoresState(PacmanGUI gui) throws IOException {
         super(gui);
@@ -40,7 +40,7 @@ public class ScoresState extends BaseState {
 
         JLabel scoreLabel = new JLabel("Score");
         JLabel nicknameLabel = new JLabel("Nickname");
-        JLabel timeLabel = new JLabel("Playtime");
+        JLabel timeLabel = new JLabel("Playtime (s)");
         JLabel wonLabel = new JLabel("Game status");
         JLabel mapLabel = new JLabel("Map");
 

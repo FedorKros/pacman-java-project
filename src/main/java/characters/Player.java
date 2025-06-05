@@ -10,17 +10,16 @@ import java.io.IOException;
 
 public class Player extends Character {
 
+    private int score = 0;
 
-    int score = 0;
+    private long bonusTime = 4000;
+    private long bonusTimeEnd = System.currentTimeMillis();
 
-    long bonusTime = 4000;
-    long bonusTimeEnd = System.currentTimeMillis();
-
-    boolean underBonusEffect = false;
-    boolean canTakeDamage = true;
-    Bonus.BonusType appliedBonus;
-    boolean isHunting = false;
-    double scoreMultiplier = 1;
+    private boolean underBonusEffect = false;
+    private boolean canTakeDamage = true;
+    private Bonus.BonusType appliedBonus;
+    private boolean isHunting = false;
+    private double scoreMultiplier = 1;
 
 
     public Player(int x, int y, int[][] gameMap) {

@@ -21,28 +21,28 @@ import java.util.Random;
 
 
 public class GameState extends BaseState {
-    Player player;
-    int[][] gameMap;
-    List<List<Integer>> adj;
-    int totalMapPoints = 0;
-    boolean gameIsOn = true;
-    boolean lost = false;
-    int lives = 3;
-    List<Integer> visited = new ArrayList<>();
+    private Player player;
+    private int[][] gameMap;
+    private List<List<Integer>> adj;
+    private int totalMapPoints = 0;
+    private boolean gameIsOn = true;
+    private boolean lost = false;
+    private int lives = 3;
+    private List<Integer> visited = new ArrayList<>();
 
-    Enemy enemy1, enemy2, enemy3, enemy4;
-    ArrayList<Enemy> enemies;
-    long startTime;
-    long totalPauseTime = 0;
-    long pauseStartTime;
+    private Enemy enemy1, enemy2, enemy3, enemy4;
+    private ArrayList<Enemy> enemies;
+    private long startTime;
+    private long totalPauseTime = 0;
+    private long pauseStartTime;
 
-    List<Bonus> bonuses;
-    long bonusDropCooldown = 5000;
-    long lastBonusDropTime = System.currentTimeMillis();
+    private List<Bonus> bonuses;
+    private long bonusDropCooldown = 5000;
+    private long lastBonusDropTime = System.currentTimeMillis();
 
-    JLabel scoreLabel, livesLabel, timeLabel, bonusLabel;
-    JPanel boardPanel = new JPanel();
-    JFrame window;
+    private JLabel scoreLabel, livesLabel, timeLabel, bonusLabel;
+    private JPanel boardPanel = new JPanel();
+    private JFrame window;
 
     public GameState(PacmanGUI gui, int mapNumber, JFrame window) {
         super(gui);
