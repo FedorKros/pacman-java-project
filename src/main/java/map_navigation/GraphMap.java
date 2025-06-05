@@ -69,8 +69,6 @@ public class GraphMap {
         return false;
     }
 
-
-
     public static List<List<Integer>> createAdjList(int[][] map) {
 
         int n = map.length*map[0].length;
@@ -98,7 +96,6 @@ public class GraphMap {
                             adj.get(neighbourCellNum).add(cellNum);
                         }
                     }
-
                 }
             }
         }
@@ -108,6 +105,5 @@ public class GraphMap {
     public static int getCellNum(int row, int column, int rowLength) {
         return row*rowLength + column;
     }
-
 
 }

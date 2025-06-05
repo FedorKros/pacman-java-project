@@ -2,30 +2,21 @@ package common;
 
 import scores.Score;
 
-import java.awt.*;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 
 
 public class Tools {
 
     private static final String SAVE_FILE_PATH = "saves/scores.txt";
 
-    public static void setGlobalFont(Font font) {
-
-    }
-
-
     public static void saveScore(Score score) throws IOException {
         ArrayList<Score> scoreList = loadScores();
         scoreList.add(score);
 
-
-
-        try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(SAVE_FILE_PATH))) {
-            out.writeObject(scoreList);
+        try (ObjectOutputStream in = new ObjectOutputStream(new FileOutputStream(SAVE_FILE_PATH))) {
+            in.writeObject(scoreList);
         } catch (IOException e) {
             System.out.println(e.getMessage());
         }

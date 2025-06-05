@@ -1,4 +1,5 @@
 package game_states;
+
 import bonuses.Bonus;
 import buttons.MouseHover;
 import buttons.SetupButton;
@@ -20,28 +21,28 @@ import java.util.Random;
 
 
 public class GameState extends BaseState {
-    int[][] gameMap;
     Player player;
-    Enemy enemy1, enemy2, enemy3, enemy4;
+    int[][] gameMap;
+    List<List<Integer>> adj;
+    int totalMapPoints = 0;
     boolean gameIsOn = true;
     boolean lost = false;
-    ArrayList<Enemy> enemies;
-    List<List<Integer>> adj;
-    List<Integer> visited = new ArrayList<>();
-    int totalMapPoints = 0;
-    int score = 0;
     int lives = 3;
-    JLabel scoreLabel, livesLabel, timeLabel, bonusLabel;
-    JPanel boardPanel = new JPanel();
+    List<Integer> visited = new ArrayList<>();
+
+    Enemy enemy1, enemy2, enemy3, enemy4;
+    ArrayList<Enemy> enemies;
     long startTime;
-    JFrame window;
     long totalPauseTime = 0;
     long pauseStartTime;
-    List<Bonus> bonuses;
 
+    List<Bonus> bonuses;
     long bonusDropCooldown = 5000;
     long lastBonusDropTime = System.currentTimeMillis();
 
+    JLabel scoreLabel, livesLabel, timeLabel, bonusLabel;
+    JPanel boardPanel = new JPanel();
+    JFrame window;
 
     public GameState(PacmanGUI gui, int mapNumber, JFrame window) {
         super(gui);
@@ -66,7 +67,6 @@ public class GameState extends BaseState {
         int enemy3X = 1;
         int enemy3Y = gameMap.length-2;
 
-
         adj = GraphMap.createAdjList(gameMap);
 
         player = new Player(1,1, gameMap);
@@ -80,8 +80,7 @@ public class GameState extends BaseState {
 
         bonuses = new ArrayList<>();
 
-
-        scoreLabel = new JLabel("Score: " + score);
+        scoreLabel = new JLabel("Score: 0");
         scoreLabel.setFont(Constants.FONT_NORMAL);
         scoreLabel.setForeground(Constants.BUTTON_TEXT_COLOR);
 
@@ -103,18 +102,15 @@ public class GameState extends BaseState {
         interfacePanel.setForeground(Color.WHITE);
         interfacePanel.setLayout(new BoxLayout(interfacePanel, BoxLayout.Y_AXIS));
         interfacePanel.add(scoreLabel, BorderLayout.NORTH);
-        interfacePanel.add(livesLabel, BorderLayout.NORTH);
         interfacePanel.add(timeLabel, BorderLayout.NORTH);
         interfacePanel.add(bonusLabel, BorderLayout.NORTH);
-
+        interfacePanel.add(livesLabel, BorderLayout.NORTH);
 
         JPanel interfaceWrapperPanel = new JPanel();
         interfaceWrapperPanel.setPreferredSize(new Dimension(250,0));
         interfaceWrapperPanel.setLayout(new BoxLayout(interfaceWrapperPanel, BoxLayout.Y_AXIS));
         interfaceWrapperPanel.setBackground(Color.BLACK);
         interfaceWrapperPanel.add(interfacePanel);
-        interfaceWrapperPanel.add(livesLabel, BorderLayout.NORTH);
-
 
         add(interfaceWrapperPanel, BorderLayout.WEST);
         add(boardPanel, BorderLayout.CENTER);
@@ -160,7 +156,6 @@ public class GameState extends BaseState {
 
     @Override
     public void setupUI() {
-
     }
 
     public void dropBonus() {
@@ -233,8 +228,6 @@ public class GameState extends BaseState {
         bonusLabel.setText("Bonus: " + player.currentBonus());
     }
 
-
-
     public void updateMap() {
         boardPanel.removeAll();
         boardPanel.setLayout(new GridBagLayout());
@@ -244,7 +237,7 @@ public class GameState extends BaseState {
             for (int j = 0; j < gameMap[i].length; j++) {
 
                 JPanel tile = new JPanel(new GridBagLayout());
-                tile.setPreferredSize(Constants.SMALL_TILE_DIMENSION);
+                tile.setPreferredSize(Constants.SMALL_TILE_SIZE);
                 if (gameMap[i][j] == 1) {
                     tile.setBackground(Constants.WALL_COLOR);
                     tile.setBorder(BorderFactory.createLineBorder(Color.GRAY,1));
@@ -306,7 +299,6 @@ public class GameState extends BaseState {
 
     }
 
-
     public void enemiesHunt() {
 
         Enemy beaten = null;
@@ -325,7 +317,6 @@ public class GameState extends BaseState {
 
                 else if (player.isHunting() && !enemy.getInCooldown()) {
                     beaten = enemy;
-
                 }
             }
 
@@ -344,7 +335,7 @@ public class GameState extends BaseState {
         gameOverLabel.setForeground(Constants.BUTTON_TEXT_COLOR);
         gameOverLabel.setFont(Constants.FONT_LARGE);
         gameOverLabel.setHorizontalAlignment(SwingConstants.CENTER);
-//        this.add(new JLabel(String.valueOf(this.score)));
+
         JLabel scoreLabel = new JLabel("Your score: " + player.getScore());
         scoreLabel.setForeground(Constants.BUTTON_TEXT_COLOR);
         scoreLabel.setFont(Constants.FONT_NORMAL);
@@ -353,7 +344,6 @@ public class GameState extends BaseState {
         enterNameLabel.setForeground(Constants.BUTTON_TEXT_COLOR);
         enterNameLabel.setFont(Constants.FONT_NORMAL);
 
-
         JTextField enterNamePane = new JTextField();
         enterNamePane.setEditable(true);
         enterNamePane.setBorder(BorderFactory.createLineBorder(Constants.POINT_COLOR,2, true));
@@ -361,7 +351,6 @@ public class GameState extends BaseState {
         enterNamePane.setFont(Constants.FONT_NORMAL);
         enterNamePane.setForeground(Constants.BUTTON_TEXT_COLOR);
         enterNamePane.setBackground(Color.BLACK);
-
 
         JButton submitButton = SetupButton.setupButton("Record score", this);
         submitButton.addMouseListener(new MouseHover());

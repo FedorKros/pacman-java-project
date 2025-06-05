@@ -2,7 +2,6 @@ package game_states;
 import common.Constants;
 import game_logic.PacmanGUI;
 
-import javax.net.ssl.SSLContextSpi;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;

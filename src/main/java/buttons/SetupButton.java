@@ -10,8 +10,8 @@ import java.awt.event.ActionListener;
 public class SetupButton {
     public static JButton setupButton(String text, JPanel panel) {
         JButton button = new JButton(text);
-        button.setPreferredSize(new Dimension(Constants.BUTTON_WIDTH, Constants.BUTTON_HEIGHT));
-        button.setMaximumSize(new Dimension(Constants.BUTTON_WIDTH, Constants.BUTTON_HEIGHT));
+        button.setPreferredSize(Constants.BUTTON_SIZE);
+        button.setMaximumSize(Constants.BUTTON_SIZE);
         button.addActionListener((ActionListener) panel);
         applyDesign(button);
         return button;

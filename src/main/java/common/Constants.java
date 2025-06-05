@@ -9,8 +9,14 @@ import java.io.IOException;
 public class Constants {
 
     public static final Dimension WINDOW_SIZE = new Dimension(1200, 800);
+    public static final Dimension SCROLL_PANE_SIZE = new Dimension(900,530);
+    public static final Dimension SCORE_COMPONENT_SIZE = new Dimension(900, 50);
 
     public static final Font FONT_NORMAL, FONT_LARGE;
+    public static final String SMALL_MAP_NAME = "Bitvoid";
+    public static final String MEDIUM_MAP_NAME = "Neon Sprawl";
+    public static final String BIG_MAP_NAME = "Cyberspace";
+
     static {
         try {
             FONT_NORMAL = Font.createFont(Font.TRUETYPE_FONT, new File("assets/fonts/Jersey-Regular.ttf")).deriveFont(Font.PLAIN, 26);
@@ -23,6 +29,7 @@ public class Constants {
     // Button size configuration
     public static final int BUTTON_WIDTH = 200;
     public static final int BUTTON_HEIGHT = 50;
+    public static final Dimension BUTTON_SIZE = new Dimension(BUTTON_WIDTH, BUTTON_HEIGHT);
     public static final Border HOVER_BUTTON_BORDER = new LineBorder(Color.CYAN, 4);
     public static final Border BUTTON_BORDER = new LineBorder(Color.CYAN);
     public static final Color BUTTON_TEXT_COLOR = Color.ORANGE;
@@ -31,7 +38,7 @@ public class Constants {
     public static final Dimension MAP_BUTTON_SIZE = new Dimension(BUTTON_WIDTH, BUTTON_HEIGHT * 4);
     public static final int MAP_BUTTON_HMARGIN = (WINDOW_SIZE.width - MAP_BUTTON_SIZE.width * 3) / 4;
 
-    // Game "tiles" configuration
+
     public static final int[][] SMALL_MAP = {
             {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
             {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
@@ -105,7 +112,7 @@ public class Constants {
 
     public static final int TILE_SIZE = 30;
 
-    public static final Dimension SMALL_TILE_DIMENSION = new Dimension(TILE_SIZE, TILE_SIZE);
+    public static final Dimension SMALL_TILE_SIZE = new Dimension(TILE_SIZE, TILE_SIZE);
 
     public static final Color WALL_COLOR = new Color(1, 24, 216);
 
@@ -123,9 +130,6 @@ public class Constants {
 
     public static final Dimension MENU_BUTTON_VMARGIN = new Dimension(0, 30);
     public static final Dimension MENU_TITLE_VMARGIN = new Dimension(0, 100);
-
-
-
 
 }
 

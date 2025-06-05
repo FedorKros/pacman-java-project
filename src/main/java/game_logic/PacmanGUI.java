@@ -10,21 +10,15 @@ import java.util.Stack;
 
 public class PacmanGUI extends JFrame  {
     private Stack<BaseState> stateStack;
-    private float time = 0.0f;
-
-
 
     public PacmanGUI() {
-
-        super("Pacman");
+        super("Pan Pacman");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setPreferredSize(Constants.WINDOW_SIZE);
-
         setResizable(false);
         setLayout(new BorderLayout());
 
-        // Start from the main menu
-        stateStack = new Stack<BaseState>();
+        stateStack = new Stack<>();
         stateStack.push(new MainMenuState(this));
         add(stateStack.peek(), BorderLayout.CENTER);
         pack();
@@ -53,23 +47,11 @@ public class PacmanGUI extends JFrame  {
 
 
     public void changeState(BaseState newState) {
-        removeState();
-        addState(newState);
-
-    }
-
-    public void addState(BaseState newState) {
+        if (!stateStack.isEmpty()) remove(stateStack.pop());
         stateStack.push(newState);
         add(newState);
         revalidate();
         repaint();
         newState.requestFocus();
     }
-
-    public void removeState() {
-        if (!stateStack.isEmpty()) remove(stateStack.pop());
-        revalidate();
-        repaint();
-    }
-
 }

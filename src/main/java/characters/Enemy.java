@@ -105,13 +105,11 @@ public class Enemy extends Character {
             int minDistY = curY;
 
             if (!player.isHunting) {
-
                 if (gameMap[curY - 1][curX] == 0) {
                     if (distance[GraphMap.getCellNum(curY - 1, curX, gameMap.length)] < distance[GraphMap.getCellNum(curY, curX, gameMap.length)]) {
                         minDistX = curX;
                         minDistY = curY - 1;
                         direction = 'u';
-
                     }
                 }
                 if (gameMap[curY + 1][curX] == 0) {
@@ -136,9 +134,6 @@ public class Enemy extends Character {
                     }
                 }
 
-                if (gameMap[minDistY][minDistX] == 0) {
-                    this.setPos(minDistX, minDistY);
-                }
             }
 
             else {
@@ -147,7 +142,6 @@ public class Enemy extends Character {
                             minDistX = curX;
                             minDistY = curY - 1;
                             direction = 'u';
-
                         }
                     }
                     if (gameMap[curY + 1][curX] == 0) {
@@ -171,14 +165,13 @@ public class Enemy extends Character {
                             direction = 'r';
                         }
                     }
-
-                    if (gameMap[minDistY][minDistX] == 0) {
-                        this.setPos(minDistX, minDistY);
-                    }
-
             }
-        lastStepTime = now;
 
+            if (gameMap[minDistY][minDistX] == 0) {
+                this.setPos(minDistX, minDistY);
+            }
+
+            lastStepTime = now;
             if (prevDirection != direction) {
                 try {
                     loadImages();
@@ -187,8 +180,7 @@ public class Enemy extends Character {
                     throw new RuntimeException(e);
                 }
             }
-    }
-
+        }
     }
 
     public void chaseSilly(List<List<Integer>> adj, Player player) {
@@ -218,7 +210,5 @@ public class Enemy extends Character {
             lastStepTime = now;
         }
     }
-
-
 
 }

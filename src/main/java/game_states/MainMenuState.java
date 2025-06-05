@@ -13,7 +13,6 @@ import java.io.IOException;
 public class MainMenuState extends BaseState {
     JButton playButton, scoresButton, quitButton;
 
-
     public MainMenuState(PacmanGUI gui) {
         super(gui);
     }
@@ -49,12 +48,9 @@ public class MainMenuState extends BaseState {
         }
     }
 
-
-
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == playButton) {
-//            gui.changeState(new GameState(gui));
             gui.changeState(new SelectMapState(gui));
         } else if (e.getSource() == scoresButton) {
             try {
@@ -66,10 +62,5 @@ public class MainMenuState extends BaseState {
             System.exit(0);
         }
     }
-
-
-
-
-
-    }
+}
 

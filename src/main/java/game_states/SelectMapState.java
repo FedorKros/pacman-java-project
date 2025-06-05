@@ -9,6 +9,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 public class SelectMapState extends BaseState {
 
@@ -45,20 +47,15 @@ public class SelectMapState extends BaseState {
         buttonsPanel.add(medMap);
         buttonsPanel.add(bigMap);
 
-
         // https://docs.oracle.com/javase/tutorial/uiswing/layout/box.html
         add(Box.createVerticalGlue());
         add(titleLabel);
         add(Box.createRigidArea(new Dimension(10, 10)));
         add(buttonsPanel);
-
-
-
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-
         if (e.getSource() == smallMap) {
             createGameWindow(gui, 1);
         }
@@ -70,9 +67,7 @@ public class SelectMapState extends BaseState {
         }
     }
 
-
     public static void createGameWindow(PacmanGUI gui, int mapNumber) {
-
         String windowName = "";
         switch (mapNumber) {
             case 1 -> windowName = " [Bitvoid]";
@@ -80,6 +75,7 @@ public class SelectMapState extends BaseState {
             case 3 -> windowName = " [Cyberspace]";
         }
 
+        gui.changeState(new MainMenuState(gui));
         JFrame gameMapWindow = new JFrame("Pan PacMan" + windowName);
         GameState gamePanel = new GameState(gui, mapNumber, gameMapWindow);
         gameMapWindow.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -90,10 +86,7 @@ public class SelectMapState extends BaseState {
         gameMapWindow.setVisible(true);
         gameMapWindow.pack();
 
-
     }
-
-
 
     @Override
     public void keyPressed(KeyEvent e) {
@@ -101,8 +94,5 @@ public class SelectMapState extends BaseState {
             gui.changeState(new MainMenuState(gui));
         }
     }
-
-
-
 
 }

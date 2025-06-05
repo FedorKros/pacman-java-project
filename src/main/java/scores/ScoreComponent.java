@@ -4,24 +4,33 @@ import common.Constants;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.Map;
+
+import static java.util.Map.entry;
+
 
 public class ScoreComponent extends JPanel {
     public JLabel scoreLabel, nicknameLabel, timeLabel, wonLabel, mapLabel;
-
+    public static final Map<Integer, String> mapMap = Map.ofEntries(
+            entry(1, Constants.SMALL_MAP_NAME),
+            entry(2, Constants.MEDIUM_MAP_NAME),
+            entry(3, Constants.BIG_MAP_NAME)
+    );
 
 
     public ScoreComponent(int score, String nickname, int playTime, boolean won, int mapSize) {
+
         scoreLabel = new JLabel(String.valueOf(score));
         nicknameLabel = new JLabel(nickname);
         timeLabel = new JLabel(String.valueOf(playTime));
-        wonLabel = new JLabel(String.valueOf(won));
-        mapLabel = new JLabel("Map: " + mapSize);
-
+        wonLabel = new JLabel("Lost");
+        if (won) wonLabel.setText("WON");
+        mapLabel = new JLabel(mapMap.get(mapSize));
 
         this.setLayout(new GridLayout(1,5,10,0));
-//        this.setBackground(Color.BLACK);
         this.setBorder(BorderFactory.createLineBorder(Color.GRAY,1));
         this.setOpaque(false);
+        this.setMaximumSize(Constants.SCORE_COMPONENT_SIZE);
 
         add(scoreLabel);
         add(nicknameLabel);
